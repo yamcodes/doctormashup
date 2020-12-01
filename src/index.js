@@ -31,7 +31,7 @@ const elements = [
     color: 'rgb(0,0,0)'
   },
   {
-    note: "C4",
+    note: "G4",
     x: 370,
     y: 295,
     radius: 30,
