@@ -2,21 +2,21 @@ import * as Tone from "tone";
 
 const elements = [
   {
-    note: "C4",
+    note: "G4",
     x: 250,
     y: 60,
     radius: 30,
     color: 'rgb(0,0,0)'
   },
   {
-    note: "D4",
+    note: "E4",
     x: 325,
     y: 90,
     radius: 30,
     color: 'rgb(0,0,0)'
   },
   {
-    note: "E4",
+    note: "D4",
     x: 380,
     y: 155,
     radius: 30,
@@ -24,14 +24,14 @@ const elements = [
   },
   ,
   {
-    note: "F4",
+    note: "G4",
     x: 390,
     y: 227,
     radius: 30,
     color: 'rgb(0,0,0)'
   },
   {
-    note: "G4",
+    note: "E4",
     x: 370,
     y: 295,
     radius: 30,
@@ -46,7 +46,7 @@ const elements = [
     color: 'rgb(0,0,0)'
   },
   {
-    note: "C4",
+    note: "A3",
     x: 245,
     y: 360,
     radius: 30,
@@ -54,7 +54,7 @@ const elements = [
   },
   ,
   {
-    note: "C4",
+    note: "A3",
     x: 176,
     y: 345,
     radius: 30,
@@ -69,21 +69,21 @@ const elements = [
   },
   ,
   {
-    note: "C4",
+    note: "F4",
     x: 100,
     y: 215,
     radius: 30,
     color: 'rgb(0,0,0)'
   },
   {
-    note: "C4",
+    note: "E4",
     x: 115,
     y: 150,
     radius: 30,
     color: 'rgb(0,0,0)'
   },
   {
-    note: "C4",
+    note: "D4",
     x: 175,
     y: 90,
     radius: 30,
