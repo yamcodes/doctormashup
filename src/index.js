@@ -105,6 +105,8 @@ const characters = [
   "Nala", "Mufasa and Scar on the cliff", "A tiger", "Simba, Nala, Zuzu, Timon and Pumbaa"
 ]
 
+let currentCharacter = 0
+
 const synth = new Tone.PolySynth();
 synth.toDestination();
 
@@ -112,7 +114,7 @@ window.addEventListener('load', _ => {
   synth.toDestination();
   updateListeners();
   draw();
-  changeCharacterName(0)
+  advanceCharacter()
   
 })
 
@@ -121,8 +123,10 @@ function updateListeners() {
    * Listeners Implementation
    */
 }
-function changeCharacterName(character) { 
-  document.getElementById("character").textContent=characters[character];
+function advanceCharacter() { 
+  currentCharacter++;
+  if (currentCharacter>13) currentCharacter=12;
+  document.getElementById("character").textContent=characters[currentCharacter-1];
 }
 function draw() {
   var canvas = document.getElementById("myCanvas");
@@ -186,23 +190,28 @@ function isIntersect(point, element) {
 
 function sendUserEvent(event, type) {
   const pos = getCurrentPosition(event);
+  let intersected = false;
   elements.forEach(element => {
     if (isIntersect(pos, element)) {
+      intersected = true;
       switch (type)
       {
         case 'note-on':
           noteOn(element.note);
+          if (element.character==currentCharacter) {
+            advanceCharacter();
+
+          }
         break;
         case 'note-off':
           noteOff(element.note);
         break;
         default:
-          type="";
         break;
       }
     }
   });
-  if (type==="all-notes-off") synth.releaseAll();
+  if (!intersected) synth.releaseAll();
 }
 
 function getCurrentPosition(event) {
