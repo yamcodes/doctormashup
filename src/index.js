@@ -3,6 +3,7 @@ import * as Tone from "tone";
 const elements = [
   {
     note: "G4",
+    character: 1,
     x: 250,
     y: 60,
     radius: 30,
@@ -10,6 +11,7 @@ const elements = [
   },
   {
     note: "E4",
+    character: 2,
     x: 325,
     y: 90,
     radius: 30,
@@ -17,6 +19,7 @@ const elements = [
   },
   {
     note: "D4",
+    character: 3,
     x: 380,
     y: 155,
     radius: 30,
@@ -24,6 +27,7 @@ const elements = [
   },
   {
     note: "G4",
+    character: 4,
     x: 390,
     y: 227,
     radius: 30,
@@ -31,6 +35,7 @@ const elements = [
   },
   {
     note: "E4",
+    character: 5,
     x: 370,
     y: 295,
     radius: 30,
@@ -38,6 +43,7 @@ const elements = [
   },
   {
     note: "C4",
+    character: 6,
     x: 315,
     y: 345,
     radius: 30,
@@ -45,6 +51,7 @@ const elements = [
   },
   {
     note: "A3",
+    character: 7,
     x: 245,
     y: 360,
     radius: 30,
@@ -52,6 +59,7 @@ const elements = [
   },
   {
     note: "A3",
+    character: 8,
     x: 176,
     y: 345,
     radius: 30,
@@ -59,6 +67,7 @@ const elements = [
   },
   {
     note: "C4",
+    character: 9,
     x: 125,
     y: 290,
     radius: 30,
@@ -66,6 +75,7 @@ const elements = [
   },
   {
     note: "F4",
+    character: 10,
     x: 100,
     y: 215,
     radius: 30,
@@ -73,6 +83,7 @@ const elements = [
   },
   {
     note: "E4",
+    character: 11,
     x: 115,
     y: 150,
     radius: 30,
@@ -80,6 +91,7 @@ const elements = [
   },
   {
     note: "D4",
+    character: 12,
     x: 175,
     y: 90,
     radius: 30,
@@ -87,14 +99,20 @@ const elements = [
   },
 ];
 
+const characters = [
+  "Rafiki lifts Simba", "Simba, Timon and Pumbaa", "Simba, Nala and Zuzu as children",
+  "Mufasa and Scar", "Scar and Simba", "Simba, Nala, Rafiki and Kiara", "The Hyenas", "Scar",
+  "Nala", "Mufasa and Scar on the cliff", "A tiger", "Simba, Nala, Zuzu, Timon and Pumbaa"
+]
 
 const synth = new Tone.PolySynth();
 synth.toDestination();
 
-window.addEventListener('load', () => {
-  synth.toDestination()
-  updateListeners()
-  draw()
+window.addEventListener('load', _ => {
+  synth.toDestination();
+  updateListeners();
+  draw();
+  changeCharacterName(0)
   
 })
 
@@ -103,7 +121,9 @@ function updateListeners() {
    * Listeners Implementation
    */
 }
-
+function changeCharacterName(character) { 
+  document.getElementById("character").textContent=characters[character];
+}
 function draw() {
   var canvas = document.getElementById("myCanvas");
   var ctx = canvas.getContext('2d');
@@ -137,6 +157,9 @@ function handleUserEvents(canvas) {
   canvas.onmouseup = function(e) { 
     sendUserEvent(e, "note-off") 
   };
+  canvas.onmousemove = function(e) { 
+    sendUserEvent(e, "all-notes-off") 
+  };
 
   canvas.addEventListener("touchstart", function(e) {
     sendUserEvent(e.touches[0], "note-on")
@@ -155,13 +178,21 @@ function sendUserEvent(event, type) {
   const pos = getCurrentPosition(event);
   elements.forEach(element => {
     if (isIntersect(pos, element)) {
-      if (type === 'note-on') {
-        noteOn(element.note)
-      } else {
-        noteOff(element.note)
+      switch (type)
+      {
+        case 'note-on':
+          noteOn(element.note);
+        break;
+        case 'note-off':
+          noteOff(element.note);
+        break;
+        default:
+          type="";
+        break;
       }
     }
   });
+  if (type==="all-notes-off") synth.releaseAll();
 }
 
 function getCurrentPosition(event) {
