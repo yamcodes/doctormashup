@@ -6,21 +6,21 @@ const elements = [
     x: 250,
     y: 60,
     radius: 30,
-    color: 'rgb(0,0,0)'
+    color: 'rgb(255,0,0)'
   },
   {
     note: "E4",
     x: 325,
     y: 90,
     radius: 30,
-    color: 'rgb(0,0,0)'
+    color: 'rgb(0,0,255)'
   },
   {
     note: "D4",
     x: 380,
     y: 155,
     radius: 30,
-    color: 'rgb(0,0,0)'
+    color: 'rgb(0,255,0)'
   },
   ,
   {
@@ -112,10 +112,12 @@ function draw() {
   var canvas = document.getElementById("myCanvas");
   var ctx = canvas.getContext('2d');
   elements.forEach(element => {
+    ctx.fill();
     ctx.beginPath();
     ctx.arc(element.x, element.y, element.radius, 0, 2 * Math.PI, false);
-    ctx.strokeStyle = element.color;
-    ctx.stroke();
+    ctx.fillStyle = element.color;
+    //ctx.strokeStyle = element.color;
+    //ctx.fill();
   });
   handleUserEvents(canvas)
 }
