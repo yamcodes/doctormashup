@@ -27,10 +27,21 @@
     <title>React App</title>
     <script src="./index.js"></script>
     <style>
+      table {
+        /*border: 1px solid black;*/
+        table-layout: fixed;
+        height:100%;
+      }
+      tr {
+        height:33%;
+      }
       td {
-        /* border: 1px solid #000000; */
-        vertical-align: top;
+        /*border: 1px solid #000000;*/
+        text-align:center;
         font-family: "Comic Sans MS", "Comic Sans", cursive;
+      }
+      #character {
+        color: blue;
       }
     </style>
   </head>
@@ -41,8 +52,24 @@
       <tr>
         <td>
           <canvas id="myCanvas" width="500" height="410"></canvas>
-        </td><td>
-          <h1>Find the character!</h1>
+        </td>
+        <td>
+          <table>
+            <tr>
+              <td>
+                <h2>Find the character!</h2>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h1 id="character">You can do it!</h1>
+              </td>
+            </tr>
+            <tr>
+              <td>
+              </td>
+            </tr>
+          </table>
         </td>
       </tr>
     </table>
