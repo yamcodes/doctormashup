@@ -99,13 +99,13 @@ const elements = [{
 ];
 
 const characters = [
-  "Rafiki lifts Simba", "Simba, Timon and Pumbaa", "Simba, Nala and Zuzu as cubs",
+  "Rafiki lifts Simba", "Simba, Timon and Pumbaa", "Zuzu, Simba and Nala as cubs",
   "Mufasa and Scar", "Scar and Simba", "Simba, Nala, Rafiki and Kiara", "The Hyenas", "Scar",
   "Nala", "Mufasa and Scar on the cliff", "A tiger", "Simba, Nala, Zuzu, Timon and Pumbaa",
 ]
 
-const encouragmentsGood = ["Good job!", "Well done!", "Wow, you're amazing!"]
-const encouragmentsBad = ["Try again! You can do it!", "Maybe another one?", "Not that one. But you're on the right track!"]
+const encouragmentsGood = ["Good job!", "Well done!", "Wow, you're amazing!", "You're doing great, keep going!", "You rock!", "You got it!", "WOOOOOW!!!"]
+const encouragmentsBad = ["Try again! You can do it!", "Maybe another one?", "Not that one. But you're on the right track!","Sorry... Try again!", "Try something else...", "You're close!", "Almost there", "Not quite..."]
 
 let currentCharacter = 0
 let won = false;
@@ -138,7 +138,7 @@ function advanceCharacter() {
 function success() {
   const randomEncouragment = encouragmentsGood[getRandomInt(encouragmentsGood.length)];
   document.getElementById("encouragment").textContent = randomEncouragment;
-  document.getElementById("encouragment").style.color = "green";
+  document.getElementById("encouragment").style.color = "#72ff72";
   advanceCharacter();
 }
 
@@ -151,10 +151,10 @@ function failure() {
 
 function victory() {
   won = true;
-  document.getElementById("character").style.color = "green";
+  document.getElementById("character").style.color = "#72ff72";
   document.getElementById("character").textContent = "You found them all!";
   document.getElementById("encouragment").textContent = "Congratulations!!! You're the best!!! You just played the song \"Can you feel the love tonight\" by Elton John.";
-  document.getElementById("encouragment").style.color = "green";
+  document.getElementById("encouragment").style.color = "#72ff72";
   let iframe = document.createElement("iframe");
   iframe.width = 420;
   iframe.height = 236;
@@ -174,12 +174,12 @@ function draw() {
     base_image.onload = function () {
       ctx.save();
       ctx.beginPath();
-      ctx.arc(element.x, element.y, 30, 0, Math.PI * 2, true);
+      ctx.arc(element.x, element.y, 34, 0, Math.PI * 2, true);
       ctx.closePath();
       ctx.clip();
-      ctx.drawImage(base_image, element.x - 30, element.y - 30, 60, 60);
+      ctx.drawImage(base_image, element.x - 60, element.y - 40, 120, 80);
       ctx.beginPath();
-      ctx.arc(0, 0, 30, 0, Math.PI * 2, true);
+      ctx.arc(0, 0, 34, 0, Math.PI * 2, true);
       ctx.clip();
       ctx.closePath();
       ctx.restore();
