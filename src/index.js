@@ -158,7 +158,7 @@ function handleUserEvents(canvas) {
     sendUserEvent(e, "note-off") 
   };
   canvas.onmousemove = function(e) { 
-    //sendUserEvent(e, "all-notes-off") 
+    sendUserEvent(e, "all-notes-off") 
   };
 
   canvas.addEventListener("touchstart", function(e) {
