@@ -1,23 +1,23 @@
 import * as Tone from "tone";
 
 const elements = [{
-    note: "G4",
+    note: "C4",
     character: 1,
     x: 250,
     y: 60,
     radius: 30,
-    color: 'rgb(255,0,0)'
+    color: 'rgb(0,255,0)'
   },
   {
-    note: "E4",
+    note: "A3",
     character: 2,
     x: 325,
     y: 90,
     radius: 30,
-    color: 'rgb(0,0,255)'
+    color: 'rgb(0,255,0)'
   },
   {
-    note: "D4",
+    note: "G3",
     character: 3,
     x: 380,
     y: 155,
@@ -25,71 +25,71 @@ const elements = [{
     color: 'rgb(0,255,0)'
   },
   {
-    note: "G4",
+    note: "C4",
     character: 4,
     x: 390,
     y: 227,
     radius: 30,
-    color: 'rgb(0,0,0)'
+    color: 'rgb(0,255,0)'
   },
   {
-    note: "E4",
+    note: "A3",
     character: 5,
     x: 370,
     y: 295,
     radius: 30,
-    color: 'rgb(0,0,0)'
+    color: 'rgb(0,255,0)'
   },
   {
-    note: "C4",
+    note: "F3",
     character: 6,
     x: 315,
     y: 345,
     radius: 30,
-    color: 'rgb(0,0,0)'
+    color: 'rgb(0,255,0)'
   },
   {
-    note: "A3",
+    note: "D3",
     character: 7,
     x: 245,
     y: 360,
     radius: 30,
-    color: 'rgb(0,0,0)'
+    color: 'rgb(0,255,0)'
   },
   {
-    note: "A3",
+    note: "D3",
     character: 8,
     x: 176,
     y: 345,
     radius: 30,
-    color: 'rgb(0,0,0)'
+    color: 'rgb(0,255,0)'
   },
   {
-    note: "C4",
+    note: "F3",
     character: 9,
     x: 125,
     y: 290,
     radius: 30,
-    color: 'rgb(0,0,0)'
+    color: 'rgb(0,255,0)'
   },
   {
-    note: "F4",
+    note: "A#3",
     character: 10,
     x: 100,
     y: 215,
     radius: 30,
-    color: 'rgb(0,0,0)'
+    color: 'rgb(0,255,0)'
   },
   {
-    note: "E4",
+    note: "A3",
     character: 11,
     x: 115,
     y: 150,
     radius: 30,
-    color: 'rgb(0,0,0)'
+    color: 'rgb(0,255,0)'
   },
   {
-    note: "D4",
+    note: "G3",
     character: 12,
     x: 175,
     y: 90,
@@ -116,8 +116,7 @@ window.addEventListener('load', _ => {
   synth.toDestination();
   updateListeners();
   draw();
-  advanceCharacter()
-
+  advanceCharacter();
 })
 
 function updateListeners() {
@@ -156,13 +155,12 @@ function victory() {
   document.getElementById("character").textContent = "You found them all!";
   document.getElementById("encouragment").textContent = "Congratulations!!! You're the best!!! You just played the song \"Can you feel the love tonight\" by Elton John.";
   document.getElementById("encouragment").style.color = "green";
-  document.getElementById("song-link").textContent = "Listen to it here";
-  //<iframe width="420" height="236" src="http://www.youtube.com/embed/25QyCxVkXwQ?autoplay=1" frameborder="0" allowfullscreen></iframe>
   let iframe = document.createElement("iframe");
-  iframe.width=420;
-  iframe.height=236;
-  iframe.src="http://www.youtube.com/embed/25QyCxVkXwQ?autoplay=1";
-  iframe.allowFullscreen=true;
+  iframe.width = 420;
+  iframe.height = 236;
+  iframe.style = "border:0px";
+  iframe.src = "http://www.youtube.com/embed/25QyCxVkXwQ?autoplay=1";
+  iframe.allowFullscreen = true;
   document.getElementById("video-frame").appendChild(iframe);
 }
 
@@ -223,7 +221,7 @@ function getOffset(el) {
 function isIntersect(point, element) {
   const relativeElement = {
     x: getOffset(document.getElementById("table-main")).left + element.x + 3,
-    y: getOffset(document.getElementById("table-main")).top + element.y + 3
+    y: getOffset(document.getElementById("table-main")).top + document.getElementById("table-main").offsetHeight/2 - 205+ element.y + 3
   };
   return Math.sqrt((point.x - relativeElement.x) ** 2 + (point.y - relativeElement.y) ** 2) < element.radius;
 }
@@ -238,7 +236,7 @@ function sendUserEvent(event, type) {
         case 'note-on':
           noteOn(element.note);
           if (!won) {
-            if (element.character == currentCharacter) {
+            if (element.character === currentCharacter) {
               success();
             } else {
               failure();
