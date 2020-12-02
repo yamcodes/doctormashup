@@ -83,8 +83,8 @@ const elements = [
     x: 175,
     y: 90,
     radius: 30,
-    color: 'rgb(0,0,0)'
-  }
+    color: 'rgb(0,255,0)'
+  },
 ];
 
 
@@ -108,15 +108,21 @@ function draw() {
   var canvas = document.getElementById("myCanvas");
   var ctx = canvas.getContext('2d');
   elements.forEach((element,i) => {
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(element.x, element.y, element.radius, 0, 2 * Math.PI, false);
-    ctx.fillStyle = element.color;
     //ctx.strokeStyle = element.color;
     let base_image = new Image();
     base_image.src = 'imag/'+(i+1)+'.jfif';
     base_image.onload = function(){
-      ctx.drawImage(base_image, element.x-30, element.y-30,60,60);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(element.x, element.y, 30, 0, Math.PI * 2, true);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(base_image, element.x-30, element.y-30, 60, 60);
+      ctx.beginPath();
+      ctx.arc(0, 0, 30, 0, Math.PI * 2, true);
+      ctx.clip();
+      ctx.closePath();
+      ctx.restore();
     }
     //ctx.fill();
   });
