@@ -26,10 +26,25 @@
     -->
     <title>React App</title>
     <script src="./index.js"></script>
+    <style>
+      td {
+        /* border: 1px solid #000000; */
+        vertical-align: top;
+        font-family: "Comic Sans MS", "Comic Sans", cursive;
+      }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-      <canvas id="myCanvas" width="1000" height="500"></canvas>
+    <table>
+      <tr>
+        <td>
+          <canvas id="myCanvas" width="500" height="410"></canvas>
+        </td><td>
+          <h1>Find the character!</h1>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>
