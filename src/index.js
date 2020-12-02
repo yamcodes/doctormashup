@@ -1,7 +1,6 @@
 import * as Tone from "tone";
 
-const elements = [
-  {
+const elements = [{
     note: "G4",
     character: 1,
     x: 250,
@@ -100,13 +99,16 @@ const elements = [
 ];
 
 const characters = [
-  "Rafiki lifts Simba", "Simba, Timon and Pumbaa", "Simba, Nala and Zuzu as children",
+  "Rafiki lifts Simba", "Simba, Timon and Pumbaa", "Simba, Nala and Zuzu as cubs",
   "Mufasa and Scar", "Scar and Simba", "Simba, Nala, Rafiki and Kiara", "The Hyenas", "Scar",
-  "Nala", "Mufasa and Scar on the cliff", "A tiger", "Simba, Nala, Zuzu, Timon and Pumbaa"
+  "Nala", "Mufasa and Scar on the cliff", "A tiger", "Simba, Nala, Zuzu, Timon and Pumbaa",
 ]
 
-let currentCharacter = 0
+const encouragmentsGood = ["Good job!", "Well done!", "Wow, you're amazing!"]
+const encouragmentsBad = ["Try again! You can do it!", "Maybe another one?", "Not that one. But you're on the right track!"]
 
+let currentCharacter = 0
+let won = false;
 const synth = new Tone.PolySynth();
 synth.toDestination();
 
@@ -115,7 +117,7 @@ window.addEventListener('load', _ => {
   updateListeners();
   draw();
   advanceCharacter()
-  
+
 })
 
 function updateListeners() {
@@ -123,25 +125,61 @@ function updateListeners() {
    * Listeners Implementation
    */
 }
-function advanceCharacter() { 
+
+function advanceCharacter() {
   currentCharacter++;
-  if (currentCharacter>13) currentCharacter=12;
-  document.getElementById("character").textContent=characters[currentCharacter-1];
+  if (currentCharacter > 12) {
+    currentCharacter = 12;
+    victory();
+    return;
+  }
+  document.getElementById("character").textContent = characters[currentCharacter - 1];
 }
+
+function success() {
+  const randomEncouragment = encouragmentsGood[getRandomInt(encouragmentsGood.length)];
+  document.getElementById("encouragment").textContent = randomEncouragment;
+  document.getElementById("encouragment").style.color = "green";
+  advanceCharacter();
+}
+
+function failure() {
+  const randomEncouragment = encouragmentsBad[getRandomInt(encouragmentsBad.length)];
+  document.getElementById("encouragment").textContent = randomEncouragment;
+  document.getElementById("encouragment").style.color = "red";
+
+}
+
+function victory() {
+  won = true;
+  document.getElementById("character").style.color = "green";
+  document.getElementById("character").textContent = "You found them all!";
+  document.getElementById("encouragment").textContent = "Congratulations!!! You're the best!!! You just played the song \"Can you feel the love tonight\" by Elton John.";
+  document.getElementById("encouragment").style.color = "green";
+  document.getElementById("song-link").textContent = "Listen to it here";
+  //<iframe width="420" height="236" src="http://www.youtube.com/embed/25QyCxVkXwQ?autoplay=1" frameborder="0" allowfullscreen></iframe>
+  let iframe = document.createElement("iframe");
+  iframe.width=420;
+  iframe.height=236;
+  iframe.src="http://www.youtube.com/embed/25QyCxVkXwQ?autoplay=1";
+  iframe.allowFullscreen=true;
+  document.getElementById("video-frame").appendChild(iframe);
+}
+
 function draw() {
   var canvas = document.getElementById("myCanvas");
   var ctx = canvas.getContext('2d');
-  elements.forEach((element,i) => {
+  elements.forEach((element, i) => {
     //ctx.strokeStyle = element.color;
     let base_image = new Image();
-    base_image.src = 'imag/'+(i+1)+'.jfif';
-    base_image.onload = function(){
+    base_image.src = 'imag/' + (i + 1) + '.jfif';
+    base_image.onload = function () {
       ctx.save();
       ctx.beginPath();
       ctx.arc(element.x, element.y, 30, 0, Math.PI * 2, true);
       ctx.closePath();
       ctx.clip();
-      ctx.drawImage(base_image, element.x-30, element.y-30, 60, 60);
+      ctx.drawImage(base_image, element.x - 30, element.y - 30, 60, 60);
       ctx.beginPath();
       ctx.arc(0, 0, 30, 0, Math.PI * 2, true);
       ctx.clip();
@@ -155,17 +193,17 @@ function draw() {
 
 
 function handleUserEvents(canvas) {
-  canvas.onmousedown = function(e) { 
-    sendUserEvent(e, "note-on") 
+  canvas.onmousedown = function (e) {
+    sendUserEvent(e, "note-on")
   };
-  canvas.onmouseup = function(e) { 
-    sendUserEvent(e, "note-off") 
+  canvas.onmouseup = function (e) {
+    sendUserEvent(e, "note-off")
   };
-  canvas.onmousemove = function(e) { 
-    sendUserEvent(e, "all-notes-off") 
+  canvas.onmousemove = function (e) {
+    sendUserEvent(e, "all-notes-off")
   };
 
-  canvas.addEventListener("touchstart", function(e) {
+  canvas.addEventListener("touchstart", function (e) {
     sendUserEvent(e.touches[0], "note-on")
   }, false);
 
@@ -173,6 +211,7 @@ function handleUserEvents(canvas) {
     sendUserEvent(e.touches[0], "note-off")
   }, false);
 }
+
 function getOffset(el) {
   const rect = el.getBoundingClientRect();
   return {
@@ -180,12 +219,13 @@ function getOffset(el) {
     top: rect.top + window.scrollY
   };
 }
+
 function isIntersect(point, element) {
-  const relativeElement = { 
-    x: getOffset(document.getElementById("table-main")).left + element.x+3,
-    y: getOffset(document.getElementById("table-main")).top + element.y+3 
+  const relativeElement = {
+    x: getOffset(document.getElementById("table-main")).left + element.x + 3,
+    y: getOffset(document.getElementById("table-main")).top + element.y + 3
   };
-  return Math.sqrt((point.x-relativeElement.x) ** 2 + (point.y - relativeElement.y) ** 2) < element.radius;
+  return Math.sqrt((point.x - relativeElement.x) ** 2 + (point.y - relativeElement.y) ** 2) < element.radius;
 }
 
 function sendUserEvent(event, type) {
@@ -194,20 +234,22 @@ function sendUserEvent(event, type) {
   elements.forEach(element => {
     if (isIntersect(pos, element)) {
       intersected = true;
-      switch (type)
-      {
+      switch (type) {
         case 'note-on':
           noteOn(element.note);
-          if (element.character==currentCharacter) {
-            advanceCharacter();
-
+          if (!won) {
+            if (element.character == currentCharacter) {
+              success();
+            } else {
+              failure();
+            }
           }
-        break;
+          break;
         case 'note-off':
           noteOff(element.note);
-        break;
+          break;
         default:
-        break;
+          break;
       }
     }
   });
@@ -223,8 +265,12 @@ function getCurrentPosition(event) {
 
 function noteOn(note) {
   synth.triggerAttack(note);
-} 
+}
 
 function noteOff(note) {
   synth.triggerRelease(note);
+}
+
+function getRandomInt(max) { // get random int from 0 (including) to max (not including)
+  return Math.floor(Math.random() * Math.floor(max));
 }
