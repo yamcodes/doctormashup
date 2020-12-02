@@ -22,7 +22,6 @@ const elements = [
     radius: 30,
     color: 'rgb(0,255,0)'
   },
-  ,
   {
     note: "G4",
     x: 390,
@@ -37,7 +36,6 @@ const elements = [
     radius: 30,
     color: 'rgb(0,0,0)'
   },
-  ,
   {
     note: "C4",
     x: 315,
@@ -52,7 +50,6 @@ const elements = [
     radius: 30,
     color: 'rgb(0,0,0)'
   },
-  ,
   {
     note: "A3",
     x: 176,
@@ -67,7 +64,6 @@ const elements = [
     radius: 30,
     color: 'rgb(0,0,0)'
   },
-  ,
   {
     note: "F4",
     x: 100,
@@ -88,7 +84,7 @@ const elements = [
     y: 90,
     radius: 30,
     color: 'rgb(0,0,0)'
-  },
+  }
 ];
 
 
@@ -111,16 +107,22 @@ function updateListeners() {
 function draw() {
   var canvas = document.getElementById("myCanvas");
   var ctx = canvas.getContext('2d');
-  elements.forEach(element => {
+  elements.forEach((element,i) => {
     ctx.fill();
     ctx.beginPath();
     ctx.arc(element.x, element.y, element.radius, 0, 2 * Math.PI, false);
     ctx.fillStyle = element.color;
     //ctx.strokeStyle = element.color;
+    let base_image = new Image();
+    base_image.src = 'imag/'+(i+1)+'.jfif';
+    base_image.onload = function(){
+      ctx.drawImage(base_image, element.x-30, element.y-30,60,60);
+    }
     //ctx.fill();
   });
   handleUserEvents(canvas)
 }
+
 
 function handleUserEvents(canvas) {
   canvas.onmousedown = function(e) { 
