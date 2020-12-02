@@ -32,12 +32,15 @@
         font-family: "Comic Sans MS", "Comic Sans", cursive;
       }
       table {
-        /*border: 1px solid black;*/
+        /*border: 1px solid #000000;*/
         table-layout: fixed;
         height:100%;
       }
-      table.main {
+      #table-main {
         margin: 0 auto;
+      }
+      #table-side {
+        width:400px;
       }
       tr {
         height:33%;
@@ -53,7 +56,7 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <table class="main" id="table-main">
+    <table id="table-main">
       <tr>
         <h1>The Circle of Life</h1>
       </tr>
@@ -62,7 +65,7 @@
           <canvas id="myCanvas" width="500" height="410"></canvas>
         </td>
         <td>
-          <table>
+          <table id="table-side">
             <tr>
               <td>
                 <h2>Find the character!</h2>
