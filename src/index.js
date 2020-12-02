@@ -158,7 +158,7 @@ function handleUserEvents(canvas) {
     sendUserEvent(e, "note-off") 
   };
   canvas.onmousemove = function(e) { 
-    sendUserEvent(e, "all-notes-off") 
+    //sendUserEvent(e, "all-notes-off") 
   };
 
   canvas.addEventListener("touchstart", function(e) {
@@ -169,9 +169,19 @@ function handleUserEvents(canvas) {
     sendUserEvent(e.touches[0], "note-off")
   }, false);
 }
-
+function getOffset(el) {
+  const rect = el.getBoundingClientRect();
+  return {
+    left: rect.left + window.scrollX,
+    top: rect.top + window.scrollY
+  };
+}
 function isIntersect(point, element) {
-  return Math.sqrt((point.x-element.x) ** 2 + (point.y - element.y) ** 2) < element.radius;
+  const relativeElement = { 
+    x: getOffset(document.getElementById("table-main")).left + element.x+3,
+    y: getOffset(document.getElementById("table-main")).top + element.y+3 
+  };
+  return Math.sqrt((point.x-relativeElement.x) ** 2 + (point.y - relativeElement.y) ** 2) < element.radius;
 }
 
 function sendUserEvent(event, type) {

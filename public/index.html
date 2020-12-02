@@ -27,18 +27,23 @@
     <title>React App</title>
     <script src="./index.js"></script>
     <style>
+      body {
+        text-align:center;
+        font-family: "Comic Sans MS", "Comic Sans", cursive;
+      }
       table {
         /*border: 1px solid black;*/
         table-layout: fixed;
         height:100%;
+      }
+      table.main {
+        margin: 0 auto;
       }
       tr {
         height:33%;
       }
       td {
         /*border: 1px solid #000000;*/
-        text-align:center;
-        font-family: "Comic Sans MS", "Comic Sans", cursive;
       }
       #character {
         color: blue;
@@ -48,7 +53,10 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <table>
+    <table class="main" id="table-main">
+      <tr>
+        <h1>The Circle of Life</h1>
+      </tr>
       <tr>
         <td>
           <canvas id="myCanvas" width="500" height="410"></canvas>
