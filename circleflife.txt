@@ -1,5 +1,0 @@
--notes : bo nenagen et meleh harayot
--design: every circle we have a different character from lion king
--human facotrs: make it into a puzzle 
--additional GUI elements:  balonim / mashu nehmad im patarta
-- number of elements
