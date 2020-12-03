@@ -1,70 +1,56 @@
-# Getting Started with Create React App
+# Circle of Life
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Controller Purpose
+ 
+To inspire children to express their knowledge of the characters of the movie "The Lion King" in a fun way.
 
-## Available Scripts
+### How to Use It
+
+#### Compilation
 
 In the project directory, you can run:
 
-### `yarn start`
+### `npm start`
 
-Runs the app in the development mode.\
+Runs the app in the development mode.
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
+The page will reload if you make edits.
 You will also see any lint errors in the console.
 
-### `yarn test`
+#### Usage
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Find a character (or more than one) according to an instruction on the screen. 
 
-### `yarn build`
+Upon clicking on an image, it will play a note.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Upon clicking on the correct image, it will display a word of encouragment.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Upon clicking on an incorrect image, it will still display a word of encouragment. 
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Once completing all 12 challenges, a victory message will be displayed.
 
-### `yarn eject`
+A player will be informed that they have in fact played the melody of the song "Can you feel the love tonight?" - featured in the movie.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+This along with the simple premise and pattern of the game (the solution is clicking all the images one after the other clockwise)
+positions the game as a game for children aged 0-10 (6-10 if the kid will read by themselves).
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Modifications and Additions
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+1. Images have been added to the 12 circles, corresponding to The Lion King characters.
+2. Circles have been enlarged to promote readability for children.
+3. Notes have been adjusted to the melody of "Can you feel the love tonight?"
+4. Titles have been added to describe the game, its title (The Circle of Life) and instructions.
+5. An IFrame with the actual song has been added at the end upon completion, played automatically.
+6. Words of encourgment colored green (upon success) and red (upon failure) have been added, chosen randomally.
+7. The page has been themed as Dark Mode to make it more pleasant to use in more environments.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Creators
 
-## Learn More
+- Yam Borodetsky, 3rd Year RRIS (International) Computer Science, IDC
+- Moshe Sisay, 3rd Year Israeli Computer Science, IDC
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Additional Info
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+It is a submission for assignment #2 in **Computer Music** 20-21 in *IDC, Herzliya*.
