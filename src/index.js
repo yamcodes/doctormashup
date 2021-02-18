@@ -1,23 +1,29 @@
 import * as Tone from "tone";
-
+const test = "nothing";
 const elements = [{
-    note: "C4",
+    note: "play-all",
     character: 1,
+    track: new Audio("tracks/rise/m-accompaniment.wav"),
+    playing: false,
     x: 250,
     y: 60,
     radius: 30,
     color: 'rgb(0,255,0)'
   },
   {
-    note: "A3",
+    note: "v-rise",
     character: 2,
+    track: new Audio("tracks/rise/m-vocals.wav"),
+    playing: false,
     x: 325,
     y: 90,
     radius: 30,
     color: 'rgb(0,255,0)'
   },
   {
-    note: "G3",
+    note: "v-allfallsdown",
+    track: new Audio("tracks/all falls down/m-vocals.wav"),
+    playing: false,
     character: 3,
     x: 380,
     y: 155,
@@ -25,77 +31,85 @@ const elements = [{
     color: 'rgb(0,255,0)'
   },
   {
-    note: "C4",
+    note: "v-heymama",
     character: 4,
+    track: new Audio("tracks/heymama/m-vocals.wav"),
+    playing: false,
     x: 390,
     y: 227,
     radius: 30,
     color: 'rgb(0,255,0)'
   },
   {
-    note: "A3",
+    note: "v-impossible",
     character: 5,
+    track: new Audio("tracks/impossible/m-vocals.wav"),
+    playing: false,
     x: 370,
     y: 295,
     radius: 30,
     color: 'rgb(0,255,0)'
   },
   {
-    note: "F3",
+    note: "v-lockedaway",
     character: 6,
+    track: new Audio("tracks/locked away/m-vocals.wav"),
+    playing: false,
     x: 315,
     y: 345,
     radius: 30,
     color: 'rgb(0,255,0)'
   },
   {
-    note: "D3",
+    note: "v-onecallaway",
     character: 7,
+    track: new Audio("tracks/one call away/m-vocals.wav"),
+    playing: false,
     x: 245,
     y: 360,
     radius: 30,
     color: 'rgb(0,255,0)'
   },
   {
-    note: "D3",
+    note: "v-stitches",
     character: 8,
+    track: new Audio("tracks/stitches/m-vocals.wav"),
+    playing: false,
     x: 176,
     y: 345,
     radius: 30,
     color: 'rgb(0,255,0)'
   },
   {
-    note: "F3",
+    note: "v-treatyoubetter",
     character: 9,
+    track: new Audio("tracks/treat you better/m-vocals.wav"),
+    playing: false,
     x: 125,
     y: 290,
     radius: 30,
     color: 'rgb(0,255,0)'
   },
-  {
-    note: "A#3",
-    character: 10,
-    x: 100,
-    y: 215,
-    radius: 30,
-    color: 'rgb(0,255,0)'
-  },
-  {
-    note: "A3",
-    character: 11,
-    x: 115,
-    y: 150,
-    radius: 30,
-    color: 'rgb(0,255,0)'
-  },
-  {
-    note: "G3",
-    character: 12,
-    x: 175,
-    y: 90,
-    radius: 30,
-    color: 'rgb(0,255,0)'
-  },
+  // {
+  //   note: "v-uandi",
+  //   character: 10,
+  //   track: new Audio("tracks/uandi/vocals.wav"),
+  //   playing: false,
+  //   x: 100,
+  //   y: 215,
+  //   radius: 30,
+  //   color: 'rgb(0,255,0)'
+  // },
+  // {
+  //   note: "v-whateverittakes",
+  //   character: 11,
+  //   track: new Audio("tracks/whateverittakes/vocals.wav"),
+  //   playing: false,
+  //   x: 115,
+  //   y: 150,
+  //   radius: 30,
+  //   color: 'rgb(0,255,0)'
+  // }
 ];
 
 const characters = [
@@ -134,7 +148,7 @@ window.addEventListener('load', _ => {
   //player.autostart = true;
   //player.toDestination();
   updateListeners();
-  draw();
+  draw(34);
   advanceCharacter();
 })
 
@@ -183,7 +197,7 @@ function victory() {
   document.getElementById("video-frame").appendChild(iframe);
 }
 
-function draw() {
+function draw(size) {
   var canvas = document.getElementById("myCanvas");
   var ctx = canvas.getContext('2d');
   elements.forEach((element, i) => {
@@ -193,7 +207,7 @@ function draw() {
     base_image.onload = function () {
       ctx.save();
       ctx.beginPath();
-      ctx.arc(element.x, element.y, 34, 0, Math.PI * 2, true);
+      ctx.arc(element.x, element.y, size, 0, Math.PI * 2, true);
       ctx.closePath();
       ctx.clip();
       ctx.drawImage(base_image, element.x - 60, element.y - 40, 120, 80);
@@ -254,6 +268,7 @@ function sendUserEvent(event, type) {
       switch (type) {
         case 'note-on':
           noteOn(element.note);
+          toggleTrack(element);
           if (!won) {
             if (element.character === currentCharacter) {
               success();
@@ -281,10 +296,50 @@ function getCurrentPosition(event) {
 }
 
 function noteOn(note) {
-  //alert(note);
-  rise.play();
-  //synth.triggerAttack(note);
+  //note.track.play();
 }
+
+function toggleTrack(element) {
+  if (element.note === "play-all") {
+    if (!element.playing) {
+      element.playing = true;
+      elements[0].track.play();
+      elements[0].playing = true;
+      elements[0].track.muted = false;
+      draw(17);
+      for (let i=1;i<elements.length;i++) {
+        elements[i].track.play();
+        elements[i].playing = false;
+        elements[i].track.muted = true;
+        //
+
+      }
+    }
+    // else {
+    //   element.playing = false;
+    //   elements[0].track.pause();
+    //   elements[0].playing = false;
+    //   //elements[0].track.muted = false;
+    //   for (let i=1;i<elements.length;i++) {
+    //     elements[i].track.pause();
+    //     //elements[i].playing = false;
+    //     //elements[i].track.muted = true;
+    //   }
+    // }
+  }
+  else {
+    if (!element.playing)
+    {
+      element.track.muted = false;
+      element.playing = true;
+    }
+    else {
+      element.track.muted = true;
+      element.playing = false;
+    }
+  }
+}
+
 
 function noteOff(note) {
   synth.triggerRelease(note);
