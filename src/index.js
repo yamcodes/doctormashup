@@ -108,12 +108,31 @@ const encouragmentsGood = ["Good job!", "Well done!", "Wow, you're amazing!", "Y
 const encouragmentsBad = ["Try again! You can do it!", "Maybe another one?", "Not that one. But you're on the right track!","Sorry... Try again!", "Try something else...", "You're close!", "Almost there", "Not quite..."]
 
 let currentCharacter = 0
-let won = false;
+let won = false; 
+let a_rise = new Audio("tracks/rise/accompaniment.wav");
+let v_heymama = new Audio("tracks/heymama/vocals.wav");
+let v_allfallsdown = new Audio("tracks/all falls down/vocals.wav");
+let v_impossible = new Audio("tracks/impossible/vocals.wav");
+let v_lockedaway = new Audio("tracks/locked away/vocals.wav");
+let v_onecallaway = new Audio("tracks/one call away/vocals.wav");
+let v_rise = new Audio("tracks/rise/vocals.wav");
+let v_stitches = new Audio("tracks/stitches/vocals.wav");
+let v_treatyoubetter = new Audio("tracks/treat you better/vocals.wav");
+let v_uandi = new Audio("tracks/uandi/vocals.wav");
+let v_whateverittakes = new Audio("tracks/whateverittakes/vocals.wav");
+//const player = new Tone.Player("./gummybear.mp3").toMaster();
+// play as soon as the buffer is loaded
+//player.autostart = true;
+
 const synth = new Tone.PolySynth();
 synth.toDestination();
+//player.toDestination();
 
 window.addEventListener('load', _ => {
   synth.toDestination();
+  //player.toDestination();
+  //player.autostart = true;
+  //player.toDestination();
   updateListeners();
   draw();
   advanceCharacter();
@@ -262,7 +281,9 @@ function getCurrentPosition(event) {
 }
 
 function noteOn(note) {
-  synth.triggerAttack(note);
+  //alert(note);
+  rise.play();
+  //synth.triggerAttack(note);
 }
 
 function noteOff(note) {
