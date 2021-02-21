@@ -1,94 +1,117 @@
 import * as Tone from "tone";
 const test = "nothing";
+const BASE_SIZE = 34;
+const SMALL_SIZE = 17;
+let base_image;
+let radius = BASE_SIZE;
+let canvas, ctx;
+var mainCanvas = document.getElementById("myCanvas");
+var mainContext = mainCanvas.getContext('2d');
+ 
+var canvasWidth = mainCanvas.width;
+var canvasHeight = mainCanvas.height;
+var requestAnimationFrame = window.requestAnimationFrame || 
+                            window.mozRequestAnimationFrame || 
+                            window.webkitRequestAnimationFrame || 
+                            window.msRequestAnimationFrame;
 const elements = [{
     note: "play-all",
     character: 1,
     track: new Audio("tracks/rise/m-accompaniment.wav"),
     playing: false,
+    radius: SMALL_SIZE,
     x: 250,
     y: 60,
-    radius: 30,
-    color: 'rgb(0,255,0)'
+    color: 'rgb(0,255,0)',
+    base_image:new Image(),
   },
   {
     note: "v-rise",
     character: 2,
     track: new Audio("tracks/rise/m-vocals.wav"),
     playing: false,
+    radius: SMALL_SIZE,
     x: 325,
     y: 90,
-    radius: 30,
-    color: 'rgb(0,255,0)'
+    color: 'rgb(0,255,0)',
+    base_image:new Image(),
   },
   {
     note: "v-allfallsdown",
     track: new Audio("tracks/all falls down/m-vocals.wav"),
     playing: false,
+    radius: SMALL_SIZE,
     character: 3,
     x: 380,
     y: 155,
-    radius: 30,
-    color: 'rgb(0,255,0)'
+    color: 'rgb(0,255,0)',
+    base_image:new Image(),
   },
   {
     note: "v-heymama",
     character: 4,
     track: new Audio("tracks/heymama/m-vocals.wav"),
     playing: false,
+    radius: SMALL_SIZE,
     x: 390,
     y: 227,
-    radius: 30,
-    color: 'rgb(0,255,0)'
+    color: 'rgb(0,255,0)',
+    base_image:new Image(),
   },
   {
     note: "v-impossible",
     character: 5,
     track: new Audio("tracks/impossible/m-vocals.wav"),
     playing: false,
+    radius: SMALL_SIZE,
     x: 370,
     y: 295,
-    radius: 30,
-    color: 'rgb(0,255,0)'
+    color: 'rgb(0,255,0)',
+    base_image:new Image(),
   },
   {
     note: "v-lockedaway",
     character: 6,
     track: new Audio("tracks/locked away/m-vocals.wav"),
     playing: false,
+    radius: SMALL_SIZE,
     x: 315,
     y: 345,
-    radius: 30,
-    color: 'rgb(0,255,0)'
+    color: 'rgb(0,255,0)',
+    base_image:new Image(),
   },
   {
     note: "v-onecallaway",
     character: 7,
     track: new Audio("tracks/one call away/m-vocals.wav"),
     playing: false,
+    radius: SMALL_SIZE,
     x: 245,
     y: 360,
-    radius: 30,
-    color: 'rgb(0,255,0)'
+    color: 'rgb(0,255,0)',
+    base_image:new Image(),
   },
   {
     note: "v-stitches",
     character: 8,
     track: new Audio("tracks/stitches/m-vocals.wav"),
     playing: false,
+    radius: SMALL_SIZE,
     x: 176,
     y: 345,
-    radius: 30,
-    color: 'rgb(0,255,0)'
+    color: 'rgb(0,255,0)',
+    base_image:new Image(),
   },
   {
     note: "v-treatyoubetter",
     character: 9,
     track: new Audio("tracks/treat you better/m-vocals.wav"),
     playing: false,
+    radius: SMALL_SIZE,
     x: 125,
     y: 290,
-    radius: 30,
-    color: 'rgb(0,255,0)'
+    color: 'rgb(0,255,0)',
+    base_image:new Image(),
   },
   // {
   //   note: "v-uandi",
@@ -148,7 +171,8 @@ window.addEventListener('load', _ => {
   //player.autostart = true;
   //player.toDestination();
   updateListeners();
-  draw(34);
+  draw();
+  //drawCircle();
   advanceCharacter();
 })
 
@@ -198,30 +222,70 @@ function victory() {
 }
 
 function draw(size) {
-  var canvas = document.getElementById("myCanvas");
-  var ctx = canvas.getContext('2d');
   elements.forEach((element, i) => {
     //ctx.strokeStyle = element.color;
-    let base_image = new Image();
-    base_image.src = 'imag/' + (i + 1) + '.jfif';
-    base_image.onload = function () {
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(element.x, element.y, size, 0, Math.PI * 2, true);
-      ctx.closePath();
-      ctx.clip();
-      ctx.drawImage(base_image, element.x - 60, element.y - 40, 120, 80);
-      ctx.beginPath();
-      ctx.arc(0, 0, 34, 0, Math.PI * 2, true);
-      ctx.clip();
-      ctx.closePath();
-      ctx.restore();
+    element.base_image.src = 'imag/' + (i + 1) + '.jpg';
+    element.base_image.onload = function () {
+      mainContext.save();
+      mainContext.beginPath();
+      mainContext.arc(element.x, element.y, SMALL_SIZE, 0, Math.PI * 2, true); //ctx.arc(element.x, element.y, size, 0, Math.PI * 2, true);
+      mainContext.closePath();
+      mainContext.clip();
+      mainContext.drawImage(element.base_image, element.x - 60, element.y - 40, 120, 80);
+      mainContext.beginPath();
+      mainContext.arc(0, 0, 34, 0, Math.PI * 2, true);
+      mainContext.clip();
+      mainContext.closePath();
+      mainContext.restore();
     }
     //ctx.fill();
   });
-  handleUserEvents(canvas)
+  handleUserEvents(mainCanvas);
 }
 
+function animateShrink(element){
+  mainContext.clearRect(0, 0, canvasWidth, canvasHeight);
+  elements.forEach((ielement, i) => {
+    mainContext.save();
+    mainContext.beginPath();
+    console.log(ielement.note + ", " + ielement.radius)
+    mainContext.arc(ielement.x, ielement.y, ielement.radius, 0, Math.PI * 2, true); //ctx.arc(element.x, element.y, size, 0, Math.PI * 2, true);
+    mainContext.closePath();
+    mainContext.clip();
+    mainContext.drawImage(ielement.base_image, ielement.x - 60, ielement.y - 40, 120, 80);
+    mainContext.beginPath();
+    mainContext.arc(0, 0, 34, 0, Math.PI * 2, true);
+    mainContext.clip();
+    mainContext.closePath();
+    mainContext.restore();
+  });
+  if (element.radius>SMALL_SIZE) {
+    element.radius--;
+    requestAnimationFrame(_=>animateShrink(element));
+  }
+}
+
+function animateGrow(element){
+  mainContext.clearRect(0, 0, canvasWidth, canvasHeight);
+  elements.forEach((ielement, i) => {
+    mainContext.save();
+    mainContext.beginPath();
+    console.log(ielement.note + ", " + ielement.radius)
+    mainContext.arc(ielement.x, ielement.y, ielement.radius, 0, Math.PI * 2, true); //ctx.arc(element.x, element.y, size, 0, Math.PI * 2, true);
+    mainContext.closePath();
+    mainContext.clip();
+    mainContext.drawImage(ielement.base_image, ielement.x - 60, ielement.y - 40, 120, 80);
+    mainContext.beginPath();
+    mainContext.arc(0, 0, 34, 0, Math.PI * 2, true);
+    mainContext.clip();
+    mainContext.closePath();
+    mainContext.restore();
+  });
+  if (element.radius<BASE_SIZE) {
+    element.radius++;
+    requestAnimationFrame(_=>animateGrow(element));
+  }
+}
 
 function handleUserEvents(canvas) {
   canvas.onmousedown = function (e) {
@@ -300,13 +364,14 @@ function noteOn(note) {
 }
 
 function toggleTrack(element) {
+  
   if (element.note === "play-all") {
     if (!element.playing) {
+      animateGrow(element);
       element.playing = true;
       elements[0].track.play();
       elements[0].playing = true;
       elements[0].track.muted = false;
-      draw(17);
       for (let i=1;i<elements.length;i++) {
         elements[i].track.play();
         elements[i].playing = false;
@@ -328,16 +393,20 @@ function toggleTrack(element) {
     // }
   }
   else {
+    
     if (!element.playing)
     {
+      animateGrow(element);
       element.track.muted = false;
       element.playing = true;
     }
     else {
+      animateShrink(element);
       element.track.muted = true;
       element.playing = false;
     }
   }
+  //animateShrink();
 }
 
 
