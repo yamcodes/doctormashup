@@ -1,120 +1,99 @@
 import * as Tone from "tone";
-const test = "nothing";
 const BASE_SIZE = 34;
 const SMALL_SIZE = 17;
-let base_image;
+const IMAGE_CIRCLE_RADIUS = 150;
 let radius = BASE_SIZE;
-let canvas, ctx;
-var mainCanvas = document.getElementById("myCanvas");
-var mainContext = mainCanvas.getContext('2d');
- 
-var canvasWidth = mainCanvas.width;
-var canvasHeight = mainCanvas.height;
+var canvas = document.getElementById("myCanvas");
+var context = canvas.getContext('2d');
+var canvasWidth = canvas.width;
+var canvasHeight = canvas.height;
 var requestAnimationFrame = window.requestAnimationFrame || 
                             window.mozRequestAnimationFrame || 
                             window.webkitRequestAnimationFrame || 
                             window.msRequestAnimationFrame;
 const elements = [{
-    note: "play-all",
-    character: 1,
-    track: new Audio("tracks/rise/m-accompaniment.wav"),
-    playing: false,
-    radius: SMALL_SIZE,
-    x: 250,
-    y: 60,
-    color: 'rgb(0,255,0)',
-    base_image:new Image(),
+    id: "rise",
+    title: "Jonas Blue - Rise ft. Jack & Jack",
+    title_short: "Rise",
+    type: "accompaniment",
+    x: 250, // 250
+    y: 60, // 60
+    image_filename: "1.jpg",
   },
   {
-    note: "v-rise",
-    character: 2,
-    track: new Audio("tracks/rise/m-vocals.wav"),
-    playing: false,
-    radius: SMALL_SIZE,
+    id: "rise",
+    title: "Jonas Blue - Rise ft. Jack & Jack",
+    title_short: "Rise",
+    type: "vocals",
     x: 325,
     y: 90,
-    color: 'rgb(0,255,0)',
-    base_image:new Image(),
+    image_filename:"2.jpg",
   },
   {
-    note: "v-allfallsdown",
-    track: new Audio("tracks/all falls down/m-vocals.wav"),
-    playing: false,
-    radius: SMALL_SIZE,
-    character: 3,
+    id: "allfallsdown",
+    title: "Alan Walker - All Falls Down ft. Noah Cyrus, Digital Farm Animals & Juliander",
+    title_short: "All Falls Down",
+    type: "vocals",
     x: 380,
     y: 155,
-    color: 'rgb(0,255,0)',
-    base_image:new Image(),
+    image_filename:"3.jpg",
   },
   {
-    note: "v-heymama",
-    character: 4,
-    track: new Audio("tracks/heymama/m-vocals.wav"),
-    playing: false,
-    radius: SMALL_SIZE,
+    id: "heymama",
+    title: "Jonas Blue - Hey Mama ft. William Singe",
+    title_short: "Hey Mama",
+    type: "vocals",
     x: 390,
     y: 227,
-    color: 'rgb(0,255,0)',
-    base_image:new Image(),
+    image_filename:"4.jpg",
   },
   {
-    note: "v-impossible",
-    character: 5,
-    track: new Audio("tracks/impossible/m-vocals.wav"),
-    playing: false,
-    radius: SMALL_SIZE,
+    id: "impossible",
+    title: "James Arthur - Impossible",
+    title_short: "Impossible",
+    type: "vocals",
     x: 370,
     y: 295,
-    color: 'rgb(0,255,0)',
-    base_image:new Image(),
+    image_filename:"5.jpg",
   },
   {
-    note: "v-lockedaway",
-    character: 6,
-    track: new Audio("tracks/locked away/m-vocals.wav"),
-    playing: false,
-    radius: SMALL_SIZE,
+    id: "lockedaway",
+    title: "R. City - Locked Away ft. Adam Levine",
+    title_short: "Locked Away",
+    type: "vocals",
     x: 315,
     y: 345,
-    color: 'rgb(0,255,0)',
-    base_image:new Image(),
+    image_filename:"6.jpg",
   },
   {
-    note: "v-onecallaway",
-    character: 7,
-    track: new Audio("tracks/one call away/m-vocals.wav"),
-    playing: false,
-    radius: SMALL_SIZE,
+    id: "onecallaway",
+    title: "Charlie Puth - One Call Away",
+    title_short: "One Call Away",
+    type: "vocals",
     x: 245,
     y: 360,
-    color: 'rgb(0,255,0)',
-    base_image:new Image(),
+    image_filename:"7.jpg",
   },
   {
-    note: "v-stitches",
-    character: 8,
-    track: new Audio("tracks/stitches/m-vocals.wav"),
-    playing: false,
-    radius: SMALL_SIZE,
+    id: "stitches",
+    title: "Shawn Mendes - Stitches",
+    title_short: "Stitches",
+    type: "vocals",
     x: 176,
     y: 345,
-    color: 'rgb(0,255,0)',
-    base_image:new Image(),
+    image_filename:"8.jpg",
   },
   {
-    note: "v-treatyoubetter",
-    character: 9,
-    track: new Audio("tracks/treat you better/m-vocals.wav"),
-    playing: false,
-    radius: SMALL_SIZE,
+    id: "treatyoubetter",
+    title: "Shawn Mendes - Treat You Better",
+    title_short: "Treat You Better",
+    type: "vocals",
     x: 125,
     y: 290,
-    color: 'rgb(0,255,0)',
-    base_image:new Image(),
+    image_filename:"9.jpg",
   },
   // {
-  //   note: "v-uandi",
+  //   id: "v-uandi",
   //   character: 10,
   //   track: new Audio("tracks/uandi/vocals.wav"),
   //   playing: false,
@@ -124,7 +103,7 @@ const elements = [{
   //   color: 'rgb(0,255,0)'
   // },
   // {
-  //   note: "v-whateverittakes",
+  //   id: "v-whateverittakes",
   //   character: 11,
   //   track: new Audio("tracks/whateverittakes/vocals.wav"),
   //   playing: false,
@@ -135,28 +114,6 @@ const elements = [{
   // }
 ];
 
-const characters = [
-  "Rafiki lifts Simba", "Simba, Timon and Pumbaa", "Zuzu, Simba and Nala as cubs",
-  "Mufasa and Scar", "Scar and Simba", "Simba, Nala, Rafiki and Kiara", "The Hyenas", "Scar",
-  "Nala", "Mufasa and Scar on the cliff", "A tiger", "Simba, Nala, Zuzu, Timon and Pumbaa",
-]
-
-const encouragmentsGood = ["Good job!", "Well done!", "Wow, you're amazing!", "You're doing great, keep going!", "You rock!", "You got it!", "WOOOOOW!!!"]
-const encouragmentsBad = ["Try again! You can do it!", "Maybe another one?", "Not that one. But you're on the right track!","Sorry... Try again!", "Try something else...", "You're close!", "Almost there", "Not quite..."]
-
-let currentCharacter = 0
-let won = false; 
-let a_rise = new Audio("tracks/rise/accompaniment.wav");
-let v_heymama = new Audio("tracks/heymama/vocals.wav");
-let v_allfallsdown = new Audio("tracks/all falls down/vocals.wav");
-let v_impossible = new Audio("tracks/impossible/vocals.wav");
-let v_lockedaway = new Audio("tracks/locked away/vocals.wav");
-let v_onecallaway = new Audio("tracks/one call away/vocals.wav");
-let v_rise = new Audio("tracks/rise/vocals.wav");
-let v_stitches = new Audio("tracks/stitches/vocals.wav");
-let v_treatyoubetter = new Audio("tracks/treat you better/vocals.wav");
-let v_uandi = new Audio("tracks/uandi/vocals.wav");
-let v_whateverittakes = new Audio("tracks/whateverittakes/vocals.wav");
 //const player = new Tone.Player("./gummybear.mp3").toMaster();
 // play as soon as the buffer is loaded
 //player.autostart = true;
@@ -173,7 +130,6 @@ window.addEventListener('load', _ => {
   updateListeners();
   draw();
   //drawCircle();
-  advanceCharacter();
 })
 
 function updateListeners() {
@@ -182,82 +138,49 @@ function updateListeners() {
    */
 }
 
-function advanceCharacter() {
-  currentCharacter++;
-  if (currentCharacter > 12) {
-    currentCharacter = 12;
-    victory();
-    return;
-  }
-  document.getElementById("character").textContent = characters[currentCharacter - 1];
-}
-
-function success() {
-  const randomEncouragment = encouragmentsGood[getRandomInt(encouragmentsGood.length)];
-  document.getElementById("encouragment").textContent = randomEncouragment;
-  document.getElementById("encouragment").style.color = "#72ff72";
-  advanceCharacter();
-}
-
-function failure() {
-  const randomEncouragment = encouragmentsBad[getRandomInt(encouragmentsBad.length)];
-  document.getElementById("encouragment").textContent = randomEncouragment;
-  document.getElementById("encouragment").style.color = "red";
-
-}
-
-function victory() {
-  won = true;
-  document.getElementById("character").style.color = "#72ff72";
-  document.getElementById("character").textContent = "You found them all!";
-  document.getElementById("encouragment").textContent = "Congratulations!!! You're the best!!! You just played the song \"Can you feel the love tonight\" by Elton John.";
-  document.getElementById("encouragment").style.color = "#72ff72";
-  let iframe = document.createElement("iframe");
-  iframe.width = 420;
-  iframe.height = 236;
-  iframe.style = "border:0px";
-  iframe.src = "http://www.youtube.com/embed/25QyCxVkXwQ?autoplay=1";
-  iframe.allowFullscreen = true;
-  document.getElementById("video-frame").appendChild(iframe);
-}
-
-function draw(size) {
-  elements.forEach((element, i) => {
+function draw() {
+  elements.forEach((e,i) => {
     //ctx.strokeStyle = element.color;
-    element.base_image.src = 'imag/' + (i + 1) + '.jpg';
-    element.base_image.onload = function () {
-      mainContext.save();
-      mainContext.beginPath();
-      mainContext.arc(element.x, element.y, SMALL_SIZE, 0, Math.PI * 2, true); //ctx.arc(element.x, element.y, size, 0, Math.PI * 2, true);
-      mainContext.closePath();
-      mainContext.clip();
-      mainContext.drawImage(element.base_image, element.x - 60, element.y - 40, 120, 80);
-      mainContext.beginPath();
-      mainContext.arc(0, 0, 34, 0, Math.PI * 2, true);
-      mainContext.clip();
-      mainContext.closePath();
-      mainContext.restore();
+    e.track = new Audio ("tracks/"+e.id+"/m-"+e.type+".wav");
+    e.track.muted = true;
+    e.radius = SMALL_SIZE;
+    let a = (i*360/elements.length-90)*Math.PI/180
+    e.x = canvasWidth/2+ IMAGE_CIRCLE_RADIUS*Math.cos(a);
+    e.y = canvasHeight/2+IMAGE_CIRCLE_RADIUS*Math.sin(a);
+    e.image = new Image();
+    e.image.src = 'image/' + e.image_filename;
+    e.image.onload = function () {
+      context.save();
+      context.beginPath();
+      context.arc(e.x, e.y, SMALL_SIZE, 0, Math.PI * 2, true); //ctx.arc(element.x, element.y, size, 0, Math.PI * 2, true);
+      context.closePath();
+      context.clip();
+      context.drawImage(e.image, e.x - 60, e.y - 40, 120, 80);
+      context.beginPath();
+      context.arc(0, 0, 34, 0, Math.PI * 2, true);
+      context.clip();
+      context.closePath();
+      context.restore();
     }
     //ctx.fill();
   });
-  handleUserEvents(mainCanvas);
+  handleUserEvents(canvas);
 }
 
 function animateShrink(element){
-  mainContext.clearRect(0, 0, canvasWidth, canvasHeight);
-  elements.forEach((ielement, i) => {
-    mainContext.save();
-    mainContext.beginPath();
-    console.log(ielement.note + ", " + ielement.radius)
-    mainContext.arc(ielement.x, ielement.y, ielement.radius, 0, Math.PI * 2, true); //ctx.arc(element.x, element.y, size, 0, Math.PI * 2, true);
-    mainContext.closePath();
-    mainContext.clip();
-    mainContext.drawImage(ielement.base_image, ielement.x - 60, ielement.y - 40, 120, 80);
-    mainContext.beginPath();
-    mainContext.arc(0, 0, 34, 0, Math.PI * 2, true);
-    mainContext.clip();
-    mainContext.closePath();
-    mainContext.restore();
+  context.clearRect(0, 0, canvasWidth, canvasHeight);
+  elements.forEach(e => {
+    context.save();
+    context.beginPath();
+    context.arc(e.x, e.y, e.radius, 0, Math.PI * 2, true); //ctx.arc(element.x, element.y, size, 0, Math.PI * 2, true);
+    context.closePath();
+    context.clip();
+    context.drawImage(e.image, e.x - 60, e.y - 40, 120, 80);
+    context.beginPath();
+    context.arc(0, 0, 34, 0, Math.PI * 2, true);
+    context.clip();
+    context.closePath();
+    context.restore();
   });
   if (element.radius>SMALL_SIZE) {
     element.radius--;
@@ -266,20 +189,19 @@ function animateShrink(element){
 }
 
 function animateGrow(element){
-  mainContext.clearRect(0, 0, canvasWidth, canvasHeight);
+  context.clearRect(0, 0, canvasWidth, canvasHeight);
   elements.forEach((ielement, i) => {
-    mainContext.save();
-    mainContext.beginPath();
-    console.log(ielement.note + ", " + ielement.radius)
-    mainContext.arc(ielement.x, ielement.y, ielement.radius, 0, Math.PI * 2, true); //ctx.arc(element.x, element.y, size, 0, Math.PI * 2, true);
-    mainContext.closePath();
-    mainContext.clip();
-    mainContext.drawImage(ielement.base_image, ielement.x - 60, ielement.y - 40, 120, 80);
-    mainContext.beginPath();
-    mainContext.arc(0, 0, 34, 0, Math.PI * 2, true);
-    mainContext.clip();
-    mainContext.closePath();
-    mainContext.restore();
+    context.save();
+    context.beginPath();
+    context.arc(ielement.x, ielement.y, ielement.radius, 0, Math.PI * 2, true); //ctx.arc(element.x, element.y, size, 0, Math.PI * 2, true);
+    context.closePath();
+    context.clip();
+    context.drawImage(ielement.image, ielement.x - 60, ielement.y - 40, 120, 80);
+    context.beginPath();
+    context.arc(0, 0, 34, 0, Math.PI * 2, true);
+    context.clip();
+    context.closePath();
+    context.restore();
   });
   if (element.radius<BASE_SIZE) {
     element.radius++;
@@ -289,21 +211,21 @@ function animateGrow(element){
 
 function handleUserEvents(canvas) {
   canvas.onmousedown = function (e) {
-    sendUserEvent(e, "note-on")
+    sendUserEvent(e, "track-on")
   };
   canvas.onmouseup = function (e) {
-    sendUserEvent(e, "note-off")
+    sendUserEvent(e, "track-off")
   };
   canvas.onmousemove = function (e) {
-    sendUserEvent(e, "all-notes-off")
+    sendUserEvent(e, "all-tracks-off")
   };
 
   canvas.addEventListener("touchstart", function (e) {
-    sendUserEvent(e.touches[0], "note-on")
+    sendUserEvent(e.touches[0], "track-on")
   }, false);
 
   canvas.addEventListener("touchend", function (e) {
-    sendUserEvent(e.touches[0], "note-off")
+    sendUserEvent(e.touches[0], "track-off")
   }, false);
 }
 
@@ -326,23 +248,16 @@ function isIntersect(point, element) {
 function sendUserEvent(event, type) {
   const pos = getCurrentPosition(event);
   let intersected = false;
-  elements.forEach(element => {
-    if (isIntersect(pos, element)) {
+  elements.forEach(e => {
+    if (isIntersect(pos, e)) {
       intersected = true;
       switch (type) {
-        case 'note-on':
-          noteOn(element.note);
-          toggleTrack(element);
-          if (!won) {
-            if (element.character === currentCharacter) {
-              success();
-            } else {
-              failure();
-            }
-          }
+        case 'track-on':
+          trackOn(e);
+          toggleTrack(e);
           break;
-        case 'note-off':
-          noteOff(element.note);
+        case 'track-off':
+          trackOff(e);
           break;
         default:
           break;
@@ -359,25 +274,24 @@ function getCurrentPosition(event) {
   };
 }
 
-function noteOn(note) {
-  //note.track.play();
+function trackOn(element) {
+  //element.track.play();
+}
+
+function trackOff(element) {
 }
 
 function toggleTrack(element) {
   
-  if (element.note === "play-all") {
-    if (!element.playing) {
+  if (element.type === "accompaniment") {
+    if (element.track.muted) { // "Play All"
       animateGrow(element);
-      element.playing = true;
       elements[0].track.play();
-      elements[0].playing = true;
       elements[0].track.muted = false;
       for (let i=1;i<elements.length;i++) {
         elements[i].track.play();
-        elements[i].playing = false;
         elements[i].track.muted = true;
         //
-
       }
     }
     // else {
@@ -393,27 +307,23 @@ function toggleTrack(element) {
     // }
   }
   else {
-    
-    if (!element.playing)
+    if (element.track.muted) // "Play Vocals"
     {
       animateGrow(element);
       element.track.muted = false;
-      element.playing = true;
     }
-    else {
+    else { // "Mute Vocals"
       animateShrink(element);
       element.track.muted = true;
-      element.playing = false;
     }
+    refreshVocalsList();
   }
-  //animateShrink();
 }
 
-
-function noteOff(note) {
-  synth.triggerRelease(note);
-}
-
-function getRandomInt(max) { // get random int from 0 (including) to max (not including)
-  return Math.floor(Math.random() * Math.floor(max));
+function refreshVocalsList() {
+  let vocals = "";
+  elements.forEach(e=>{if(e.type==="vocals" && !e.track.muted) vocals+=", "+e.title;});
+  if (vocals==="") vocals = "‎"; //empty character symbol to add space
+  else vocals = vocals.substring(2);
+  document.getElementsByClassName('vocals content')[0].innerHTML = vocals;
 }

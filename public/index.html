@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>The Circle of Life</title>
+    <title>Doctor Mashup</title>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -25,15 +25,16 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
     <script src="./index.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@1,800&display=swap" rel="stylesheet">
     <style>
       body {
         background-color: #181a1b;
         color: #e8e6e3;
         vertical-align: top;
         text-align:center;
-        font-family: "Comic Sans MS", "Comic Sans", cursive;
+        font-family: 'Sarabun', sans-serif;
       }
       table {
         table-layout: fixed;
@@ -48,8 +49,11 @@
       tr {
         height:33%;
       }
-      #character {
+      .vocals {
         color: #337dff;
+      }
+      .instrumental {
+        color: red;
       }
       #video-frame {
         width: 420px;
@@ -61,7 +65,7 @@
     <div id="root"></div>
     <table id="table-main">
       <tr>
-        <h1>The Circle of Life</h1>
+        <h1>♫ DOCTOR MASHUP ♫</h1>
       </tr>
       <tr>
         <td>
@@ -71,17 +75,19 @@
           <table id="table-side">
             <tr>
               <td>
-                <h2>Find the characters!</h2>
+                <h2>Click on an artist to make them sing!</h2>
               </td>
             </tr>
             <tr>
               <td>
-                <h1 id="character">Loading...</h1>
+                <h3 class="title vocals">Vocals:</h3>
+                <h2 class="content vocals">‎</h2>
               </td>
             </tr>
             <tr>
               <td>
-                <h2 id="encouragment">Good luck!</h2>
+                <h3 class="title instrumental">Instrumental:</h3>
+                <h2 class="content instrumental">Jonas Blue - Rise ft. Jack & Jack</h2>
                 <div id="video-frame"></div>
                 
               </td>
