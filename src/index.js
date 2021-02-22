@@ -21,8 +21,6 @@ const elements = [{
     title: "Jonas Blue - Rise ft. Jack & Jack",
     title_short: "Rise",
     type: "accompaniment",
-    x: 250, // 250
-    y: 60, // 60
     image_filename: "1.jpg",
   },
   {
@@ -30,8 +28,6 @@ const elements = [{
     title: "Jonas Blue - Rise ft. Jack & Jack",
     title_short: "Rise",
     type: "vocals",
-    x: 325,
-    y: 90,
     image_filename:"2.jpg",
   },
   {
@@ -39,8 +35,6 @@ const elements = [{
     title: "Alan Walker - All Falls Down ft. Noah Cyrus, Digital Farm Animals & Juliander",
     title_short: "All Falls Down",
     type: "vocals",
-    x: 380,
-    y: 155,
     image_filename:"3.jpg",
   },
   {
@@ -48,8 +42,6 @@ const elements = [{
     title: "Jonas Blue - Hey Mama ft. William Singe",
     title_short: "Hey Mama",
     type: "vocals",
-    x: 390,
-    y: 227,
     image_filename:"4.jpg",
   },
   {
@@ -57,8 +49,6 @@ const elements = [{
     title: "James Arthur - Impossible",
     title_short: "Impossible",
     type: "vocals",
-    x: 370,
-    y: 295,
     image_filename:"5.jpg",
   },
   {
@@ -66,8 +56,6 @@ const elements = [{
     title: "R. City - Locked Away ft. Adam Levine",
     title_short: "Locked Away",
     type: "vocals",
-    x: 315,
-    y: 345,
     image_filename:"6.jpg",
   },/*
   {
@@ -75,8 +63,6 @@ const elements = [{
     title: "Charlie Puth - One Call Away",
     title_short: "One Call Away",
     type: "vocals",
-    x: 245,
-    y: 360,
     image_filename:"7.jpg",
   },
   {
@@ -84,8 +70,6 @@ const elements = [{
     title: "Shawn Mendes - Stitches",
     title_short: "Stitches",
     type: "vocals",
-    x: 176,
-    y: 345,
     image_filename:"8.jpg",
   },
   {
@@ -93,8 +77,6 @@ const elements = [{
     title: "Shawn Mendes - Treat You Better",
     title_short: "Treat You Better",
     type: "vocals",
-    x: 125,
-    y: 290,
     image_filename:"9.jpg",
   },*/
   // {
@@ -102,8 +84,6 @@ const elements = [{
   //   character: 10,
   //   track: new Audio("tracks/uandi/vocals.wav"),
   //   playing: false,
-  //   x: 100,
-  //   y: 215,
   //   radius: 30,
   //   color: 'rgb(0,255,0)'
   // },
@@ -112,8 +92,6 @@ const elements = [{
   //   character: 11,
   //   track: new Audio("tracks/whateverittakes/vocals.wav"),
   //   playing: false,
-  //   x: 115,
-  //   y: 150,
   //   radius: 30,
   //   color: 'rgb(0,255,0)'
   // }

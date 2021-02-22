@@ -29,9 +29,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@1,800&display=swap" rel="stylesheet">
     <style>
+      table {
+          border-collapse: collapse;
+          border-spacing: 0;
+      }
       body {
-        background-color: #181a1b;
-        color: #e8e6e3;
+        background-color: #36393f;
+        color: white;
         vertical-align: top;
         text-align:center;
         font-family: 'Sarabun', sans-serif;
@@ -50,10 +54,10 @@
         height:33%;
       }
       .vocals {
-        color: #337dff;
+        color: #00e0a7;
       }
       .instrumental {
-        color: red;
+        color: #ffa600;
       }
             
       /* toggle in label designing */
@@ -61,7 +65,7 @@
           position : relative ; 
           display : inline-block; 
           width : 30px; 
-          height : 17px; 
+          height : 16px; 
           top: 4px;
           left: 35px;
           background-color: #72767d; 
@@ -123,7 +127,7 @@
         text-align:left;
       }
       tr .toggles { 
-        border-top: 1px solid #42454a;
+        /*border-top: 1px solid #42454a;*/
       }
       .toggle-wrapper {
         -webkit-user-select: none;
@@ -131,6 +135,17 @@
         -khtml-user-select: none;
         -ms-user-select: none;
         display:inline;
+      }
+      .main-row {
+        background-color: #292b2f;
+      }
+      tr td:first-child {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+      }
+      tr td:last-child {
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
       }
     </style>
   </head>
@@ -141,31 +156,31 @@
       <tr>
         <h1>♫ DOCTOR MASHUP ♫</h1>
       </tr>
-      <tr>
-        <td>
-          <canvas id="myCanvas" width="500" height="410"></canvas>
-        </td>
-        <td>
-          <table id="table-side">
-            <tr>
-              <td>
-                <h2>Click on an artist to make them sing!</h2>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <h3 class="title vocals">Vocals:</h3>
-                <h2 class="content vocals">‎</h2>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <h3 class="title instrumental">Instrumental:</h3>
-                <h2 class="content instrumental">Jonas Blue - Rise ft. Jack & Jack</h2>
-              </td>
-            </tr>
-          </table>
-        </td>
+      <tr class="main-row">
+          <td class="main-column">
+            <canvas id="myCanvas" width="500" height="410"></canvas>
+          </td>
+          <td class="main-column">
+            <table id="table-side">
+              <tr>
+                <td>
+                  <h4>Click on an artist to make them sing!</h4>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <h3 class="title vocals">Vocals:</h3>
+                  <h2 class="content vocals">‎</h2>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <h3 class="title instrumental">Instrumental:</h3>
+                  <h2 class="content instrumental">Jonas Blue - Rise ft. Jack & Jack</h2>
+                </td>
+              </tr>
+            </table>
+          </td>
       </tr>
       <tr class="toggles">
         <td colspan="2" class="toggles">
