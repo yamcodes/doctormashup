@@ -271,6 +271,7 @@ function isIntersect(point, element) {
 
 function sendUserEvent(event, type) {
   const pos = getCurrentPosition(event);
+  if (!pos) return
   let intersected = false;
   elements.forEach(e => {
     if (isIntersect(pos, e)) {
@@ -307,6 +308,8 @@ function getCurrentSize(element) {
 }
 
 function getCurrentPosition(event) {
+  if(!event) return;
+  console.log(event);
   return {
     x: event.clientX,
     y: event.clientY
