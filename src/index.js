@@ -261,7 +261,7 @@ function getOffset(el) {
 function isIntersect(point, element) {
   const relativeElement = {
     x: getOffset(document.getElementById("table-main")).left + element.x + 3,
-    y: getOffset(document.getElementById("table-main")).top + document.getElementById("table-main").offsetHeight/2 - 205+ element.y - 26
+    y: getOffset(document.getElementById("table-main")).top + document.getElementById("table-main").offsetHeight/2 - 205+ element.y - 44
   };
   return Math.sqrt((point.x - relativeElement.x) ** 2 + (point.y - relativeElement.y) ** 2) < element.radius;
 }
