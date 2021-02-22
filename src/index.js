@@ -1,8 +1,11 @@
 import * as Tone from "tone";
-const BASE_SIZE = 34;
+const BASE_SIZE = 30;
 const SMALL_SIZE = 17;
 const MEDIUM_SIZE = 23;
-const IMAGE_CIRCLE_RADIUS = 150;
+const MIN_SIZE = 17;
+const MAX_SIZE = BASE_SIZE;
+const INCREASE_SIZE = 6;
+const IMAGE_CIRCLE_RADIUS = 100;
 let animating = false;
 let animatingMode = "default";
 let radius = BASE_SIZE;
@@ -214,13 +217,13 @@ function animateShrinkGrow(element, size=BASE_SIZE){
     context.restore();
   });
   animating = false;
-  if (element.radius<size && animatingMode!== "shrinking") {
+  if (element.radius<size && animatingMode!== "shrinking" && element.radius<MAX_SIZE) {
     element.radius++;
     requestAnimationFrame(_=>animateShrinkGrow(element,size));
     animatingMode = "growing";
     return;
   }
-  else if (element.radius>size && animatingMode!== "growing") {
+  else if (element.radius>size && animatingMode!== "growing" && element.radius > MIN_SIZE) {
     element.radius--;
     requestAnimationFrame(_=>animateShrinkGrow(element,size));
     animatingMode="shrinking";
@@ -281,7 +284,7 @@ function sendUserEvent(event, type) {
           trackOff(e);
           break;
         case 'all-tracks-off':
-          animateShrinkGrow(e, getCurrentSize(e)+6);
+          animateShrinkGrow(e, getCurrentSize(e)+INCREASE_SIZE);
           canvas.style.cursor="pointer";
           break;
         default:
@@ -375,7 +378,6 @@ function refreshVocalsList() {
 }
 
 function toggleSimpleMode() {
-  alert("Fart");
 }
 
 function disableSimpleModeToggle() {
