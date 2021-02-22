@@ -6,6 +6,7 @@ const IMAGE_CIRCLE_RADIUS = 150;
 let animating = false;
 let animatingMode = "default";
 let radius = BASE_SIZE;
+let simpleMode = true;
 const hoveredElements = new Set();
 var canvas = document.getElementById("myCanvas");
 var context = canvas.getContext('2d');
@@ -137,9 +138,13 @@ window.addEventListener('load', _ => {
 })
 
 function updateListeners() {
-  /**
-   * Listeners Implementation
-   */
+  document.getElementById("simpleModeToggle").addEventListener('change', (event) => {
+    if (event.currentTarget.checked) {
+      simpleMode=true;
+    } else {
+      simpleMode=false;
+    }
+  });
 }
 
 function draw() {
@@ -209,7 +214,6 @@ function animateGrow(element, maxSize=BASE_SIZE){
   });
   if (element.radius<maxSize) {
     element.radius++;
-    console.log("Growing " + element.id + " to " + element.radius);
     requestAnimationFrame(_=>animateGrow(element,maxSize));
   }
 }
@@ -217,12 +221,10 @@ function animateGrow(element, maxSize=BASE_SIZE){
 function animateShrinkGrow(element, size=BASE_SIZE){
   if (animating) return;
   animating = true;
-  console.log("initiating shrinkgrow with " + element.id + ", size " + size + ", current radius: " + element.radius)
   context.clearRect(0, 0, canvasWidth, canvasHeight);
   elements.forEach((e, i) => {
     context.save();
     context.beginPath();
-    if (e === element) console.log("loop radius: " + e.radius + " actual radius: " + element.radius)
     context.arc(e.x, e.y, e.radius, 0, Math.PI * 2, true); //ctx.arc(element.x, element.y, size, 0, Math.PI * 2, true);
     context.closePath();
     context.clip();
@@ -236,14 +238,12 @@ function animateShrinkGrow(element, size=BASE_SIZE){
   animating = false;
   if (element.radius<size && animatingMode!== "shrinking") {
     element.radius++;
-    console.log("growing " + element.id + " to " + element.radius);
     requestAnimationFrame(_=>animateShrinkGrow(element,size));
     animatingMode = "growing";
     return;
   }
   else if (element.radius>size && animatingMode!== "growing") {
     element.radius--;
-    console.log("shrinking " + element.id + " to " + element.radius);
     requestAnimationFrame(_=>animateShrinkGrow(element,size));
     animatingMode="shrinking";
     return;
@@ -283,7 +283,7 @@ function getOffset(el) {
 function isIntersect(point, element) {
   const relativeElement = {
     x: getOffset(document.getElementById("table-main")).left + element.x + 3,
-    y: getOffset(document.getElementById("table-main")).top + document.getElementById("table-main").offsetHeight/2 - 205+ element.y + 3
+    y: getOffset(document.getElementById("table-main")).top + document.getElementById("table-main").offsetHeight/2 - 205+ element.y - 26
   };
   return Math.sqrt((point.x - relativeElement.x) ** 2 + (point.y - relativeElement.y) ** 2) < element.radius;
 }
@@ -351,6 +351,7 @@ function toggleTrack(element) {
         //
       }
       animateShrinkGrow(element, getCurrentSize(element));
+      disableSimpleModeToggle();
     }
     // else {
     //   element.playing = false;
@@ -365,17 +366,26 @@ function toggleTrack(element) {
     // }
   }
   else {
-    if (element.track.muted) // "Play Vocals"
-    {
-      animateGrow(element);
-      element.track.muted = false;
-    }
-    else { // "Mute Vocals"
-      animateShrink(element);
-      element.track.muted = true;
+      if (element.track.muted) // "Play Vocals"
+      {
+        animateGrow(element);
+        element.track.muted = false;
+      }
+      else { // "Mute Vocals"
+        animateShrink(element);
+        element.track.muted = true;
+      }
+      if (simpleMode) {
+        elements.forEach(e=> {
+          if (e.type==="vocals" && e.id!==element.id) {
+            console.log(e.id + ", " + element.id)
+            animateShrink(e);
+            e.track.muted = true;
+          }
+        });
+      }
     }
     refreshVocalsList();
-  }
 }
 
 function refreshVocalsList() {
@@ -384,4 +394,12 @@ function refreshVocalsList() {
   if (vocals==="") vocals = "‎"; //empty character symbol to add space
   else vocals = vocals.substring(2);
   document.getElementsByClassName('vocals content')[0].innerHTML = vocals;
+}
+
+function toggleSimpleMode() {
+  alert("Fart");
+}
+
+function disableSimpleModeToggle() {
+  document.getElementById("simpleModeToggle").disabled = true;
 }

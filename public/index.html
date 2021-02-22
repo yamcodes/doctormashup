@@ -55,8 +55,82 @@
       .instrumental {
         color: red;
       }
-      #video-frame {
-        width: 420px;
+            
+      /* toggle in label designing */
+      .toggle { 
+          position : relative ; 
+          display : inline-block; 
+          width : 30px; 
+          height : 17px; 
+          top: 4px;
+          left: 35px;
+          background-color: #72767d; 
+          border-radius: 30px; 
+          border: 2px solid #72767d; 
+          transition:  all 0.25s; 
+      } 
+
+      .toggle:hover {
+        cursor: pointer;
+      }
+              
+      /* After slide changes */
+      .toggle:after { 
+          content: ''; 
+          position: absolute; 
+          width: 15px; 
+          height: 15px; 
+          border-radius: 50%; 
+          background-color: white; 
+          top: 1px;  
+          left: 1px; 
+          transition-timing-function: ease;
+          transition:  all 0.25s; 
+      } 
+              
+      /* Toggle text */
+      p { 
+          font-family: Arial, Helvetica, sans-serif; 
+          font-weight: bold; 
+      } 
+              
+      /* Checkbox cheked effect */
+      .checkbox:checked + .toggle::after { 
+          left : 15px;  
+      } 
+              
+      /* Checkbox cheked toggle label bg color */
+      .checkbox:checked + .toggle { 
+          background-color: #43b581; 
+          border: 2px solid #43b581; 
+      } 
+              
+      .checkbox:disabled + .toggle { 
+          background-color: #3a5e52; 
+          border: 2px solid #3a5e52; 
+          cursor: not-allowed;
+      } 
+              
+      .checkbox:disabled + .toggle:after { 
+          background-color: #727478;
+      } 
+      /* Checkbox vanished */
+      .checkbox {  
+          display : none; 
+      } 
+      .toggles { 
+        padding-top:20px;
+        text-align:left;
+      }
+      tr .toggles { 
+        border-top: 1px solid #42454a;
+      }
+      .toggle-wrapper {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -khtml-user-select: none;
+        -ms-user-select: none;
+        display:inline;
       }
     </style>
   </head>
@@ -88,11 +162,20 @@
               <td>
                 <h3 class="title instrumental">Instrumental:</h3>
                 <h2 class="content instrumental">Jonas Blue - Rise ft. Jack & Jack</h2>
-                <div id="video-frame"></div>
-                
               </td>
             </tr>
           </table>
+        </td>
+      </tr>
+      <tr class="toggles">
+        <td colspan="2" class="toggles">
+          Simple Mode
+          <div class="toggle-wrapper">
+            <input type="checkbox" id="simpleModeToggle" class="checkbox" onclick="()=>alert(fart)" checked disabled/> 
+            <label for="simpleModeToggle" class="toggle"> 
+                <p></p> 
+            </label> 
+          </div>
         </td>
       </tr>
     </table>
