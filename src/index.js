@@ -1,8 +1,12 @@
 import * as Tone from "tone";
 const BASE_SIZE = 34;
 const SMALL_SIZE = 17;
+const MEDIUM_SIZE = 23;
 const IMAGE_CIRCLE_RADIUS = 150;
+let animating = false;
+let animatingMode = "default";
 let radius = BASE_SIZE;
+const hoveredElements = new Set();
 var canvas = document.getElementById("myCanvas");
 var context = canvas.getContext('2d');
 var canvasWidth = canvas.width;
@@ -64,7 +68,7 @@ const elements = [{
     x: 315,
     y: 345,
     image_filename:"6.jpg",
-  },
+  },/*
   {
     id: "onecallaway",
     title: "Charlie Puth - One Call Away",
@@ -91,7 +95,7 @@ const elements = [{
     x: 125,
     y: 290,
     image_filename:"9.jpg",
-  },
+  },*/
   // {
   //   id: "v-uandi",
   //   character: 10,
@@ -188,25 +192,63 @@ function animateShrink(element){
   }
 }
 
-function animateGrow(element){
+function animateGrow(element, maxSize=BASE_SIZE){
   context.clearRect(0, 0, canvasWidth, canvasHeight);
-  elements.forEach((ielement, i) => {
+  elements.forEach((e, i) => {
     context.save();
     context.beginPath();
-    context.arc(ielement.x, ielement.y, ielement.radius, 0, Math.PI * 2, true); //ctx.arc(element.x, element.y, size, 0, Math.PI * 2, true);
+    context.arc(e.x, e.y, e.radius, 0, Math.PI * 2, true); //ctx.arc(element.x, element.y, size, 0, Math.PI * 2, true);
     context.closePath();
     context.clip();
-    context.drawImage(ielement.image, ielement.x - 60, ielement.y - 40, 120, 80);
+    context.drawImage(e.image, e.x - 60, e.y - 40, 120, 80);
     context.beginPath();
     context.arc(0, 0, 34, 0, Math.PI * 2, true);
     context.clip();
     context.closePath();
     context.restore();
   });
-  if (element.radius<BASE_SIZE) {
+  if (element.radius<maxSize) {
     element.radius++;
-    requestAnimationFrame(_=>animateGrow(element));
+    console.log("Growing " + element.id + " to " + element.radius);
+    requestAnimationFrame(_=>animateGrow(element,maxSize));
   }
+}
+
+function animateShrinkGrow(element, size=BASE_SIZE){
+  if (animating) return;
+  animating = true;
+  console.log("initiating shrinkgrow with " + element.id + ", size " + size + ", current radius: " + element.radius)
+  context.clearRect(0, 0, canvasWidth, canvasHeight);
+  elements.forEach((e, i) => {
+    context.save();
+    context.beginPath();
+    if (e === element) console.log("loop radius: " + e.radius + " actual radius: " + element.radius)
+    context.arc(e.x, e.y, e.radius, 0, Math.PI * 2, true); //ctx.arc(element.x, element.y, size, 0, Math.PI * 2, true);
+    context.closePath();
+    context.clip();
+    context.drawImage(e.image, e.x - 60, e.y - 40, 120, 80);
+    context.beginPath();
+    context.arc(0, 0, 34, 0, Math.PI * 2, true);
+    context.clip();
+    context.closePath();
+    context.restore();
+  });
+  animating = false;
+  if (element.radius<size && animatingMode!== "shrinking") {
+    element.radius++;
+    console.log("growing " + element.id + " to " + element.radius);
+    requestAnimationFrame(_=>animateShrinkGrow(element,size));
+    animatingMode = "growing";
+    return;
+  }
+  else if (element.radius>size && animatingMode!== "growing") {
+    element.radius--;
+    console.log("shrinking " + element.id + " to " + element.radius);
+    requestAnimationFrame(_=>animateShrinkGrow(element,size));
+    animatingMode="shrinking";
+    return;
+  }
+  animatingMode = "default";
 }
 
 function handleUserEvents(canvas) {
@@ -219,6 +261,7 @@ function handleUserEvents(canvas) {
   canvas.onmousemove = function (e) {
     sendUserEvent(e, "all-tracks-off")
   };
+  
 
   canvas.addEventListener("touchstart", function (e) {
     sendUserEvent(e.touches[0], "track-on")
@@ -259,12 +302,27 @@ function sendUserEvent(event, type) {
         case 'track-off':
           trackOff(e);
           break;
+        case 'all-tracks-off':
+          animateShrinkGrow(e, getCurrentSize(e)+6);
+          canvas.style.cursor="pointer";
+          break;
         default:
           break;
       }
     }
   });
-  if (!intersected) synth.releaseAll();
+  if (!intersected) {
+    elements.forEach(e=> {
+      animateShrinkGrow(e,getCurrentSize(e));
+    });
+    canvas.style.cursor="default";
+  }
+}
+
+function getCurrentSize(element) {
+  if (!element) return;
+  if (element.track.muted) return SMALL_SIZE;
+  return BASE_SIZE;
 }
 
 function getCurrentPosition(event) {
@@ -285,14 +343,14 @@ function toggleTrack(element) {
   
   if (element.type === "accompaniment") {
     if (element.track.muted) { // "Play All"
-      animateGrow(element);
       elements[0].track.play();
       elements[0].track.muted = false;
       for (let i=1;i<elements.length;i++) {
         elements[i].track.play();
-        elements[i].track.muted = true;
+        //elements[i].track.muted = true;
         //
       }
+      animateShrinkGrow(element, getCurrentSize(element));
     }
     // else {
     //   element.playing = false;
