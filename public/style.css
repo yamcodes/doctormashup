@@ -136,6 +136,10 @@ font-family: 'Sarabun', sans-serif;
 h1 {
 font-style: italic;
 }
-.main-title, .toggles {
+.main-title, .toggles, .canvas {
 user-select: none;
+}
+
+.canvas {
+  background-color: pink;
 }

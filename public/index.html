@@ -38,13 +38,13 @@
       </tr>
       <tr class="main-row">
           <td class="main-column">
-            <canvas id="myCanvas" width="500" height="410"></canvas>
+            <canvas id="myCanvas" class="canvas" width="500" height="410"></canvas>
           </td>
           <td class="main-column">
             <table id="table-side">
               <tr>
                 <td>
-                  <h4>Click on an artist to make them sing!</h4>
+                  <h4>Click an artist to make them sing!</h4>
                 </td>
               </tr>
               <tr>
@@ -72,6 +72,16 @@
             </label> 
           </div>
           <p>Plays one vocal at a time (on by default)</p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <h4>Log</h4>
+          <p style="text-align: left" id="log">
+            00:00: Jonas Blue
+            <br/>
+            00:05: Rise
+          </p> 
         </td>
       </tr>
     </table>

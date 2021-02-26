@@ -263,8 +263,8 @@ function getOffset(el) {
 
 function isIntersect(point, element) {
   const relativeElement = {
-    x: getOffset(document.getElementById("table-main")).left + element.x + 3,
-    y: getOffset(document.getElementById("table-main")).top + document.getElementById("table-main").offsetHeight/2 - 205+ element.y - 44
+    x: getOffset(canvas).left + element.x,
+    y: getOffset(canvas).top + element.y
   };
   return Math.sqrt((point.x - relativeElement.x) ** 2 + (point.y - relativeElement.y) ** 2) < element.radius;
 }
@@ -308,8 +308,8 @@ function getCurrentSize(element) {
 
 function getCurrentPosition(event) {
   return {
-    x: event.clientX,
-    y: event.clientY
+    x: event.pageX,
+    y: event.pageY
   };
 }
 
@@ -359,7 +359,6 @@ function toggleTrack(element) {
       if (simpleMode) {
         elements.forEach(e=> {
           if (e.type==="vocals" && e.id!==element.id) {
-            console.log(e.id + ", " + element.id)
             animateShrink(e);
             e.track.muted = true;
           }
