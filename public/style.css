@@ -139,7 +139,3 @@ font-style: italic;
 .main-title, .toggles, .canvas {
 user-select: none;
 }
-
-.canvas {
-  background-color: pink;
-}
