@@ -116,9 +116,19 @@ tr .toggles {
 user-select: none;
 display:inline;
 }
-.main-row {
+.main-row, .log-row {
 background-color: #292b2f;
 user-select: auto;
+}
+
+.log-title {
+  padding-bottom: 15px;
+}
+
+#log {
+  padding-left: 15px;
+  max-height:75px;
+  overflow:auto;
 }
 tr td:first-child {
 border-top-left-radius: 10px;

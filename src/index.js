@@ -396,6 +396,8 @@ function logTrack(element){
   minutes = minutes.substr(minutes.length-2);
   let time = minutes + ":" + seconds;
   if (!element) trackList.push({title: "No Vocals", time});
-  else trackList.push({title: element.title, time});
-  document.getElementById("log").innerHTML = trackList.map(e => e.time + " - " + e.title).join("<br/>");
+  else trackList.push({title: element.title_short, time});
+  let logElement = document.getElementById("log");
+  logElement.innerHTML = trackList.map(e => e.time + " - " + e.title).join("<br/>");
+  logElement.scrollTop = logElement.scrollHeight;
 }
