@@ -10,6 +10,9 @@ let animating = false;
 let animatingMode = "default";
 let radius = BASE_SIZE;
 let simpleMode = true;
+let trackList = [];
+
+let now = Date.now();
 const hoveredElements = new Set();
 var canvas = document.getElementById("myCanvas");
 var context = canvas.getContext('2d');
@@ -324,6 +327,7 @@ function toggleTrack(element) {
   
   if (element.type === "accompaniment") {
     if (element.track.muted) { // "Play All"
+      now = Date.now();
       elements[0].track.play();
       elements[0].track.muted = false;
       for (let i=1;i<elements.length;i++) {
@@ -349,10 +353,12 @@ function toggleTrack(element) {
   else {
       if (element.track.muted) // "Play Vocals"
       {
+        logTrack(element);
         animateGrow(element);
         element.track.muted = false;
       }
       else { // "Mute Vocals"
+        logTrack();
         animateShrink(element);
         element.track.muted = true;
       }
@@ -381,4 +387,15 @@ function toggleSimpleMode() {
 
 function disableSimpleModeToggle() {
   document.getElementById("simpleModeToggle").disabled = true;
+}
+
+function logTrack(element){
+  let seconds = "0" + Math.floor((Date.now()-now)/1000)%60;
+  seconds = seconds.substr(seconds.length-2);
+  let minutes = "0" + Math.floor(((Date.now()-now)/1000)/60)%60;
+  minutes = minutes.substr(minutes.length-2);
+  let time = minutes + ":" + seconds;
+  if (!element) trackList.push({title: "No Vocals", time});
+  else trackList.push({title: element.title, time});
+  document.getElementById("log").innerHTML = trackList.map(e => e.time + " - " + e.title).join("<br/>");
 }
