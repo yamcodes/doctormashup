@@ -7,6 +7,7 @@ const MAX_SIZE = BASE_SIZE;
 const INCREASE_SIZE = 6;
 const IMAGE_CIRCLE_RADIUS = 100;
 let animating = false;
+let BPM = 106;
 let animatingMode = "default";
 let radius = BASE_SIZE;
 let simpleMode = true;
@@ -390,14 +391,32 @@ function disableSimpleModeToggle() {
 }
 
 function logTrack(element){
-  let seconds = "0" + Math.floor((Date.now()-now)/1000)%60;
+  let accurate_seconds = (Date.now()-now)/1000;
+  let seconds = "0" + Math.floor(accurate_seconds)%60;
   seconds = seconds.substr(seconds.length-2);
   let minutes = "0" + Math.floor(((Date.now()-now)/1000)/60)%60;
   minutes = minutes.substr(minutes.length-2);
-  let time = minutes + ":" + seconds;
-  if (!element) trackList.push({title: "No Vocals", time});
-  else trackList.push({title: element.title_short, time});
+  let time = minutes + ":" + seconds; 
+  let title = element ? element.title_short : "No Vocals";
+  let beat = Math.floor((BPM / 60) * accurate_seconds);
+  let measure = Math.floor(beat/4)+1;
+  trackList.push({title, time, measure, beat});
   let logElement = document.getElementById("log");
-  logElement.innerHTML = trackList.map(e => e.time + " - " + e.title).join("<br/>");
+  logElement.innerHTML = trackList.map(e => "(" + ((e.beat % 4)+1) + "/" + e.measure + ") " + e.time + " - " + e.title).join("<br/>");
   logElement.scrollTop = logElement.scrollHeight;
+}
+
+function th(i) {
+  var j = i % 10,
+      k = i % 100;
+  if (j == 1 && k != 11) {
+      return i + "st";
+  }
+  if (j == 2 && k != 12) {
+      return i + "nd";
+  }
+  if (j == 3 && k != 13) {
+      return i + "rd";
+  }
+  return i + "th";
 }
