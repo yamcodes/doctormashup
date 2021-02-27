@@ -7,7 +7,8 @@ const MAX_SIZE = BASE_SIZE;
 const INCREASE_SIZE = 6;
 const IMAGE_CIRCLE_RADIUS = 100;
 let animating = false;
-let BPM = 106;
+const BPM = 106;
+const SONG_LENGTH_S = 216;
 let animatingMode = "default";
 let radius = BASE_SIZE;
 let simpleMode = true;
@@ -19,10 +20,10 @@ var canvas = document.getElementById("myCanvas");
 var context = canvas.getContext('2d');
 var canvasWidth = canvas.width;
 var canvasHeight = canvas.height;
-var requestAnimationFrame = window.requestAnimationFrame || 
-                            window.mozRequestAnimationFrame || 
-                            window.webkitRequestAnimationFrame || 
-                            window.msRequestAnimationFrame;
+var requestAnimationFrame = window.requestAnimationFrame ||
+  window.mozRequestAnimationFrame ||
+  window.webkitRequestAnimationFrame ||
+  window.msRequestAnimationFrame;
 const elements = [{
     id: "rise",
     title: "Jonas Blue - Rise ft. Jack & Jack",
@@ -35,57 +36,58 @@ const elements = [{
     title: "Jonas Blue - Rise ft. Jack & Jack",
     title_short: "Rise",
     type: "vocals",
-    image_filename:"2.jpg",
+    image_filename: "2.jpg",
   },
   {
     id: "allfallsdown",
     title: "Alan Walker - All Falls Down ft. Noah Cyrus, Digital Farm Animals & Juliander",
     title_short: "All Falls Down",
     type: "vocals",
-    image_filename:"3.jpg",
+    image_filename: "3.jpg",
   },
   {
     id: "heymama",
     title: "Jonas Blue - Hey Mama ft. William Singe",
     title_short: "Hey Mama",
     type: "vocals",
-    image_filename:"4.jpg",
+    image_filename: "4.jpg",
   },
   {
     id: "impossible",
     title: "James Arthur - Impossible",
     title_short: "Impossible",
     type: "vocals",
-    image_filename:"5.jpg",
+    image_filename: "5.jpg",
   },
   {
     id: "lockedaway",
     title: "R. City - Locked Away ft. Adam Levine",
     title_short: "Locked Away",
     type: "vocals",
-    image_filename:"6.jpg",
-  },/*
-  {
-    id: "onecallaway",
-    title: "Charlie Puth - One Call Away",
-    title_short: "One Call Away",
-    type: "vocals",
-    image_filename:"7.jpg",
+    image_filename: "6.jpg",
   },
-  {
-    id: "stitches",
-    title: "Shawn Mendes - Stitches",
-    title_short: "Stitches",
-    type: "vocals",
-    image_filename:"8.jpg",
-  },
-  {
-    id: "treatyoubetter",
-    title: "Shawn Mendes - Treat You Better",
-    title_short: "Treat You Better",
-    type: "vocals",
-    image_filename:"9.jpg",
-  },*/
+  /*
+    {
+      id: "onecallaway",
+      title: "Charlie Puth - One Call Away",
+      title_short: "One Call Away",
+      type: "vocals",
+      image_filename:"7.jpg",
+    },
+    {
+      id: "stitches",
+      title: "Shawn Mendes - Stitches",
+      title_short: "Stitches",
+      type: "vocals",
+      image_filename:"8.jpg",
+    },
+    {
+      id: "treatyoubetter",
+      title: "Shawn Mendes - Treat You Better",
+      title_short: "Treat You Better",
+      type: "vocals",
+      image_filename:"9.jpg",
+    },*/
   // {
   //   id: "v-uandi",
   //   character: 10,
@@ -120,27 +122,22 @@ window.addEventListener('load', _ => {
   updateListeners();
   draw();
   //drawCircle();
-})
+});
 
 function updateListeners() {
-  document.getElementById("simpleModeToggle").addEventListener('change', (event) => {
-    if (event.currentTarget.checked) {
-      simpleMode=true;
-    } else {
-      simpleMode=false;
-    }
-  });
+  document.getElementById("simpleModeToggle").addEventListener('change', toggleSimpleMode);
+  document.getElementById("download").addEventListener('click', downloadLog);
 }
 
 function draw() {
-  elements.forEach((e,i) => {
+  elements.forEach((e, i) => {
     //ctx.strokeStyle = element.color;
-    e.track = new Audio ("tracks/"+e.id+"/m-"+e.type+".wav");
+    e.track = new Audio("tracks/" + e.id + "/m-" + e.type + ".wav");
     e.track.muted = true;
     e.radius = SMALL_SIZE;
-    let a = (i*360/elements.length-90)*Math.PI/180
-    e.x = canvasWidth/2+ IMAGE_CIRCLE_RADIUS*Math.cos(a);
-    e.y = canvasHeight/2+IMAGE_CIRCLE_RADIUS*Math.sin(a);
+    let a = (i * 360 / elements.length - 90) * Math.PI / 180
+    e.x = canvasWidth / 2 + IMAGE_CIRCLE_RADIUS * Math.cos(a);
+    e.y = canvasHeight / 2 + IMAGE_CIRCLE_RADIUS * Math.sin(a);
     e.image = new Image();
     e.image.src = 'image/' + e.image_filename;
     e.image.onload = function () {
@@ -161,7 +158,7 @@ function draw() {
   handleUserEvents(canvas);
 }
 
-function animateShrink(element){
+function animateShrink(element) {
   context.clearRect(0, 0, canvasWidth, canvasHeight);
   elements.forEach(e => {
     context.save();
@@ -176,13 +173,13 @@ function animateShrink(element){
     context.closePath();
     context.restore();
   });
-  if (element.radius>SMALL_SIZE) {
+  if (element.radius > SMALL_SIZE) {
     element.radius--;
-    requestAnimationFrame(_=>animateShrink(element));
+    requestAnimationFrame(_ => animateShrink(element));
   }
 }
 
-function animateGrow(element, maxSize=BASE_SIZE){
+function animateGrow(element, maxSize = BASE_SIZE) {
   context.clearRect(0, 0, canvasWidth, canvasHeight);
   elements.forEach((e, i) => {
     context.save();
@@ -197,13 +194,13 @@ function animateGrow(element, maxSize=BASE_SIZE){
     context.closePath();
     context.restore();
   });
-  if (element.radius<maxSize) {
+  if (element.radius < maxSize) {
     element.radius++;
-    requestAnimationFrame(_=>animateGrow(element,maxSize));
+    requestAnimationFrame(_ => animateGrow(element, maxSize));
   }
 }
 
-function animateShrinkGrow(element, size=BASE_SIZE){
+function animateShrinkGrow(element, size = BASE_SIZE) {
   if (animating) return;
   animating = true;
   context.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -221,16 +218,15 @@ function animateShrinkGrow(element, size=BASE_SIZE){
     context.restore();
   });
   animating = false;
-  if (element.radius<size && animatingMode!== "shrinking" && element.radius<MAX_SIZE) {
+  if (element.radius < size && animatingMode !== "shrinking" && element.radius < MAX_SIZE) {
     element.radius++;
-    requestAnimationFrame(_=>animateShrinkGrow(element,size));
+    requestAnimationFrame(_ => animateShrinkGrow(element, size));
     animatingMode = "growing";
     return;
-  }
-  else if (element.radius>size && animatingMode!== "growing" && element.radius > MIN_SIZE) {
+  } else if (element.radius > size && animatingMode !== "growing" && element.radius > MIN_SIZE) {
     element.radius--;
-    requestAnimationFrame(_=>animateShrinkGrow(element,size));
-    animatingMode="shrinking";
+    requestAnimationFrame(_ => animateShrinkGrow(element, size));
+    animatingMode = "shrinking";
     return;
   }
   animatingMode = "default";
@@ -246,7 +242,7 @@ function handleUserEvents(canvas) {
   canvas.onmousemove = function (e) {
     sendUserEvent(e, "all-tracks-off")
   };
-  
+
 
   canvas.addEventListener("touchstart", function (e) {
     sendUserEvent(e.touches[0], "track-on")
@@ -288,8 +284,8 @@ function sendUserEvent(event, type) {
           trackOff(e);
           break;
         case 'all-tracks-off':
-          animateShrinkGrow(e, getCurrentSize(e)+INCREASE_SIZE);
-          canvas.style.cursor="pointer";
+          animateShrinkGrow(e, getCurrentSize(e) + INCREASE_SIZE);
+          canvas.style.cursor = "pointer";
           break;
         default:
           break;
@@ -297,10 +293,10 @@ function sendUserEvent(event, type) {
     }
   });
   if (!intersected) {
-    elements.forEach(e=> {
-      animateShrinkGrow(e,getCurrentSize(e));
+    elements.forEach(e => {
+      animateShrinkGrow(e, getCurrentSize(e));
     });
-    canvas.style.cursor="default";
+    canvas.style.cursor = "default";
   }
 }
 
@@ -321,17 +317,16 @@ function trackOn(element) {
   //element.track.play();
 }
 
-function trackOff(element) {
-}
+function trackOff(element) {}
 
 function toggleTrack(element) {
-  
+
   if (element.type === "accompaniment") {
     if (element.track.muted) { // "Play All"
       now = Date.now();
       elements[0].track.play();
       elements[0].track.muted = false;
-      for (let i=1;i<elements.length;i++) {
+      for (let i = 1; i < elements.length; i++) {
         elements[i].track.play();
         //elements[i].track.muted = true;
         //
@@ -350,73 +345,86 @@ function toggleTrack(element) {
     //     //elements[i].track.muted = true;
     //   }
     // }
-  }
-  else {
-      if (element.track.muted) // "Play Vocals"
-      {
-        logTrack(element);
-        animateGrow(element);
-        element.track.muted = false;
-      }
-      else { // "Mute Vocals"
-        logTrack();
-        animateShrink(element);
-        element.track.muted = true;
-      }
-      if (simpleMode) {
-        elements.forEach(e=> {
-          if (e.type==="vocals" && e.id!==element.id) {
-            animateShrink(e);
-            e.track.muted = true;
-          }
-        });
-      }
+  } else {
+    if (element.track.muted) // "Play Vocals"
+    {
+      logTrack(element);
+      animateGrow(element);
+      element.track.muted = false;
+    } else { // "Mute Vocals"
+      logTrack();
+      animateShrink(element);
+      element.track.muted = true;
     }
-    refreshVocalsList();
+    if (simpleMode) {
+      elements.forEach(e => {
+        if (e.type === "vocals" && e.id !== element.id) {
+          animateShrink(e);
+          e.track.muted = true;
+        }
+      });
+    }
+  }
+  refreshVocalsList();
 }
 
 function refreshVocalsList() {
   let vocals = "";
-  elements.forEach(e=>{if(e.type==="vocals" && !e.track.muted) vocals+=", "+e.title;});
-  if (vocals==="") vocals = "‎"; //empty character symbol to add space
+  elements.forEach(e => {
+    if (e.type === "vocals" && !e.track.muted) vocals += ", " + e.title;
+  });
+  if (vocals === "") vocals = "‎"; //empty character symbol to add space
   else vocals = vocals.substring(2);
   document.getElementsByClassName('vocals content')[0].innerHTML = vocals;
 }
 
-function toggleSimpleMode() {
-}
+function toggleSimpleMode(event) {
+  if (event.currentTarget.checked) {
+    simpleMode = true;
+    console.log("Simple mode enabled");
+  } else {
+    simpleMode = false;
+    console.log("Simple mode disabled");
+  };
+};
 
 function disableSimpleModeToggle() {
   document.getElementById("simpleModeToggle").disabled = true;
 }
 
-function logTrack(element){
-  let accurate_seconds = (Date.now()-now)/1000;
-  let seconds = "0" + Math.floor(accurate_seconds)%60;
-  seconds = seconds.substr(seconds.length-2);
-  let minutes = "0" + Math.floor(((Date.now()-now)/1000)/60)%60;
-  minutes = minutes.substr(minutes.length-2);
-  let time = minutes + ":" + seconds; 
+function logTrack(element) {
+  let accurate_seconds = (Date.now() - now) / 1000;
+  if (accurate_seconds > SONG_LENGTH_S) return;
+  let seconds = "0" + Math.floor(accurate_seconds) % 60;
+  seconds = seconds.substr(seconds.length - 2);
+  let minutes = "0" + Math.floor(((Date.now() - now) / 1000) / 60) % 60;
+  minutes = minutes.substr(minutes.length - 2);
+  let time = minutes + ":" + seconds;
   let title = element ? element.title_short : "No Vocals";
-  let beat = Math.floor((BPM / 60) * accurate_seconds);
-  let measure = Math.floor(beat/4)+1;
-  trackList.push({title, time, measure, beat});
+  let beat = Math.round((BPM / 60) * accurate_seconds);
+  let measure = Math.floor(beat / 4) + 1;
+  trackList.push({
+    title,
+    time,
+    measure,
+    beat
+  });
   let logElement = document.getElementById("log");
-  logElement.innerHTML = trackList.map(e => "(" + ((e.beat % 4)+1) + "/" + e.measure + ") " + e.time + " - " + e.title).join("<br/>");
+  logElement.innerHTML = trackList.map(e => "(" + ((e.beat % 4) + 1) + "/" + e.measure + ") " + e.time + " - " + e.title).join("<br/>");
   logElement.scrollTop = logElement.scrollHeight;
 }
 
+function downloadLog(event) {
+  alert("Hey!");
+  console.dir(event);
+}
+
 function th(i) {
-  var j = i % 10,
-      k = i % 100;
-  if (j == 1 && k != 11) {
-      return i + "st";
-  }
-  if (j == 2 && k != 12) {
-      return i + "nd";
-  }
-  if (j == 3 && k != 13) {
-      return i + "rd";
-  }
-  return i + "th";
+  let j = i % 10,
+    k = i % 100,
+    o = "th";
+  if (j === 1 && k !== 11) o = "st";
+  if (j === 2 && k !== 12) o = "nd";
+  if (j === 3 && k !== 13) o = "rd";
+  return i + o;
 }
