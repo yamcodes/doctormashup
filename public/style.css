@@ -79,7 +79,7 @@ button:hover:enabled {
   background-color: #677bc4;
 }
 
-button:active {
+button:active:enabled {
   background-color: #5b6eae;
 }
 
