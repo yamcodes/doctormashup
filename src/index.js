@@ -6,6 +6,7 @@ const MIN_SIZE = 17;
 const MAX_SIZE = BASE_SIZE;
 const INCREASE_SIZE = 6;
 const IMAGE_CIRCLE_RADIUS = 100;
+const LOG_KEYWORD = "attempt1";
 let animating = false;
 const BPM = 106;
 const SONG_LENGTH_S = 216;
@@ -13,7 +14,16 @@ let animatingMode = "default";
 let radius = BASE_SIZE;
 let simpleMode = true;
 let trackList = [];
-
+let autoLoadedTrackList;
+let canvasInteractable = true;
+let mainInterval;
+for (let i = 0; i < getBeats(); i++) {
+  trackList.push({
+    beat: i + 1,
+    title: "No Vocals",
+    played: false
+  });
+}
 let now = Date.now();
 const hoveredElements = new Set();
 var canvas = document.getElementById("myCanvas");
@@ -30,6 +40,7 @@ const elements = [{
     title_short: "Rise",
     type: "accompaniment",
     image_filename: "1.jpg",
+    index: 0,
   },
   {
     id: "rise",
@@ -106,6 +117,9 @@ const elements = [{
   // }
 ];
 
+elementsMisc();
+const DEFAULT_ACCOMPANIMENT_ELEMENT = elements[0];
+
 //const player = new Tone.Player("./gummybear.mp3").toMaster();
 // play as soon as the buffer is loaded
 //player.autostart = true;
@@ -122,11 +136,20 @@ window.addEventListener('load', _ => {
   updateListeners();
   draw();
   //drawCircle();
+  autoLoadedTrackList = localStorage.getItem(LOG_KEYWORD);
+  if (autoLoadedTrackList) {
+    document.getElementById("load").disabled = false;
+    document.getElementById("play").disabled = false;
+    autoLoadedTrackList = JSON.parse(autoLoadedTrackList);
+  }
 });
 
 function updateListeners() {
   document.getElementById("simpleModeToggle").addEventListener('change', toggleSimpleMode);
-  document.getElementById("download").addEventListener('click', downloadLog);
+  document.getElementById("save").addEventListener('click', saveLog);
+  document.getElementById("load").addEventListener('click', loadLog);
+  document.getElementById("play").addEventListener('click', playLog);
+  document.getElementById("stop").addEventListener('click', stopLog);
 }
 
 function draw() {
@@ -273,7 +296,7 @@ function sendUserEvent(event, type) {
   const pos = getCurrentPosition(event);
   let intersected = false;
   elements.forEach(e => {
-    if (isIntersect(pos, e)) {
+    if (isIntersect(pos, e) && canvasInteractable) {
       intersected = true;
       switch (type) {
         case 'track-on':
@@ -321,51 +344,8 @@ function trackOff(element) {}
 
 function toggleTrack(element) {
 
-  if (element.type === "accompaniment") {
-    if (element.track.muted) { // "Play All"
-      now = Date.now();
-      elements[0].track.play();
-      elements[0].track.muted = false;
-      for (let i = 1; i < elements.length; i++) {
-        elements[i].track.play();
-        //elements[i].track.muted = true;
-        //
-      }
-      animateShrinkGrow(element, getCurrentSize(element));
-      disableSimpleModeToggle();
-    }
-    // else {
-    //   element.playing = false;
-    //   elements[0].track.pause();
-    //   elements[0].playing = false;
-    //   //elements[0].track.muted = false;
-    //   for (let i=1;i<elements.length;i++) {
-    //     elements[i].track.pause();
-    //     //elements[i].playing = false;
-    //     //elements[i].track.muted = true;
-    //   }
-    // }
-  } else {
-    if (element.track.muted) // "Play Vocals"
-    {
-      logTrack(element);
-      animateGrow(element);
-      element.track.muted = false;
-    } else { // "Mute Vocals"
-      logTrack();
-      animateShrink(element);
-      element.track.muted = true;
-    }
-    if (simpleMode) {
-      elements.forEach(e => {
-        if (e.type === "vocals" && e.id !== element.id) {
-          animateShrink(e);
-          e.track.muted = true;
-        }
-      });
-    }
-  }
-  refreshVocalsList();
+  if (element.type === "accompaniment") playAccompaniment(element);
+  else playVocal(element);
 }
 
 function refreshVocalsList() {
@@ -401,22 +381,54 @@ function logTrack(element) {
   minutes = minutes.substr(minutes.length - 2);
   let time = minutes + ":" + seconds;
   let title = element ? element.title_short : "No Vocals";
-  let beat = Math.round((BPM / 60) * accurate_seconds);
+  let beat = getCurrentBeat(accurate_seconds);
   let measure = Math.floor(beat / 4) + 1;
-  trackList.push({
+  let index = element.index;
+  trackList[beat - 1] = {
     title,
     time,
     measure,
-    beat
-  });
-  let logElement = document.getElementById("log");
-  logElement.innerHTML = trackList.map(e => "(" + ((e.beat % 4) + 1) + "/" + e.measure + ") " + e.time + " - " + e.title).join("<br/>");
-  logElement.scrollTop = logElement.scrollHeight;
+    beat,
+    played: true,
+    index
+  };
+  refreshLog();
 }
 
-function downloadLog(event) {
-  alert("Hey!");
-  console.dir(event);
+function saveLog() {
+  localStorage.setItem(LOG_KEYWORD, JSON.stringify(trackList));
+  alert("Log saved!");
+}
+
+function loadLog() {
+  let loadedTrackList = localStorage.getItem(LOG_KEYWORD);
+  if (!loadedTrackList) return;
+  console.log(interpretLog(JSON.parse(loadedTrackList), "console"));
+  alert("Log loaded to console!");
+}
+
+function playLog() {
+  resetPlayingField();
+  disableInteractivity();
+  document.getElementById("stop").disabled = false; //enableStopLog();
+  document.getElementById("play").innerHTML = "Replay";
+  let beat = 1;
+  mainInterval = setInterval(_ => {
+    beat++;
+    let currentTrack = autoLoadedTrackList[beat - 1];
+    if (currentTrack.played) {
+      let currentElement = elements[currentTrack.index];
+      playVocal(currentElement);
+    }
+  }, getBeatInterval());
+  setTimeout(enableInteractivity, SONG_LENGTH_S * 1000)
+  playAccompaniment(DEFAULT_ACCOMPANIMENT_ELEMENT);
+}
+
+function stopLog() {
+  resetPlayingField();
+  document.getElementById("stop").disabled = true; //enableStopLog();
+  document.getElementById("play").innerHTML = "Play";
 }
 
 function th(i) {
@@ -427,4 +439,134 @@ function th(i) {
   if (j === 2 && k !== 12) o = "nd";
   if (j === 3 && k !== 13) o = "rd";
   return i + o;
+}
+
+function download(data, filename, type) {
+  var file = new Blob([data], {
+    type: type
+  });
+  if (window.navigator.msSaveOrOpenBlob) // IE10+
+    window.navigator.msSaveOrOpenBlob(file, filename);
+  else { // Others
+    var a = document.createElement("a"),
+      url = URL.createObjectURL(file);
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () {
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }, 0);
+  }
+}
+
+function interpretLog(log, mode = "HTML") {
+  if (!log) return;
+  log = log.filter(e => e.played).map(e => "(" + ((e.beat % 4) + 1) + "/" + e.measure + ") " + e.time + " - " + e.title)
+  switch (mode) {
+    case "HTML":
+      return log.join("<br>");
+    default:
+      return log.join("\n");
+  }
+}
+
+function getCurrentBeat(seconds) {
+  return Math.round((BPM / 60) * seconds);
+}
+
+function getBeatInterval() { //returns the amount of seconds to play one beat
+  return 60 / BPM * 1000;
+}
+
+function getBeats() {
+  return getCurrentBeat(SONG_LENGTH_S);
+}
+
+function elementsMisc() {
+  elements.forEach((e, i) => {
+    e.index = i;
+  });
+}
+
+function playVocal(element) {
+  if (element.track.muted) // "Play Vocals"
+  {
+    logTrack(element);
+    animateGrow(element);
+    element.track.muted = false;
+  } else { // "Mute Vocals"
+    logTrack();
+    animateShrink(element);
+    element.track.muted = true;
+  }
+  if (simpleMode) {
+    elements.forEach(e => {
+      if (e.type === "vocals" && e.id !== element.id) {
+        animateShrink(e);
+        e.track.muted = true;
+      }
+    });
+  }
+  refreshVocalsList();
+}
+
+function playAccompaniment(element) {
+  elements.forEach(e => {
+    e.track.currentTime = 0
+  });
+  //if (element.track.muted) { // "Play All"
+  now = Date.now();
+  elements[0].track.play();
+  elements[0].track.muted = false;
+  for (let i = 1; i < elements.length; i++) {
+    elements[i].track.play();
+    //elements[i].track.muted = true;
+    //
+  }
+  animateShrinkGrow(element, getCurrentSize(element));
+  disableSimpleModeToggle();
+  //}
+  // else {
+  //   element.playing = false;
+  //   elements[0].track.pause();
+  //   elements[0].playing = false;
+  //   //elements[0].track.muted = false;
+  //   for (let i=1;i<elements.length;i++) {
+  //     elements[i].track.pause();
+  //     //elements[i].playing = false;
+  //     //elements[i].track.muted = true;
+  //   }
+  // }
+}
+
+function refreshLog() {
+  let logElement = document.getElementById("log");
+  logElement.innerHTML = interpretLog(trackList);
+  logElement.scrollTop = logElement.scrollHeight;
+}
+
+function resetPlayingField() {
+  enableInteractivity();
+  elements.forEach(e=>{
+    e.track.muted = true;
+    e.track.pause();
+    e.track.currentTime = 0;
+    animateShrinkGrow(e, getCurrentSize(e));
+  });
+  trackList = [];
+  refreshVocalsList();
+  refreshLog();
+  clearInterval(mainInterval);
+}
+
+function disableInteractivity() {
+  canvasInteractable = false;
+  document.getElementById("save").disabled = true;
+}
+
+function enableInteractivity() {
+  canvasInteractable = true;
+  document.getElementById("save").disabled = false;
 }
