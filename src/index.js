@@ -6,7 +6,8 @@ const MIN_SIZE = 17;
 const MAX_SIZE = BASE_SIZE;
 const INCREASE_SIZE = 6;
 const IMAGE_CIRCLE_RADIUS = 100;
-const LOG_KEYWORD = "attempt1";
+const LOG_KEYWORD = "attempt";
+const LOG_KEYWORD_DEFAULT = "attempt1";
 let animating = false;
 const BPM = 106;
 const SONG_LENGTH_S = 216;
@@ -17,6 +18,7 @@ let trackList = [];
 let loadedTrackList;
 let canvasInteractable = true;
 let mainInterval;
+let currentAttempt = 1;
 for (let i = 0; i < getBeats(); i++) {
   trackList.push({
     beat: i + 1,
@@ -136,20 +138,60 @@ window.addEventListener('load', _ => {
   updateListeners();
   draw();
   //drawCircle();
-  loadedTrackList = localStorage.getItem(LOG_KEYWORD);
+
+  loadedTrackList = localStorage.getItem(LOG_KEYWORD_DEFAULT);
   if (loadedTrackList) {
     document.getElementById("load").disabled = false;
     document.getElementById("play").disabled = false;
+    document.getElementById("clear").disabled = false;
     loadedTrackList = JSON.parse(loadedTrackList);
+  }
+  for (let i = 5; i >= 1; i--) {
+    loadedTrackList = localStorage.getItem(LOG_KEYWORD + i);
+    if (loadedTrackList) {
+      document.getElementById("play" + i).disabled = false;
+      loadedTrackList = JSON.parse(loadedTrackList);
+    }
   }
 });
 
 function updateListeners() {
   document.getElementById("simpleModeToggle").addEventListener('change', toggleSimpleMode);
-  document.getElementById("save").addEventListener('click', saveLog);
+  document.getElementById("save").addEventListener('click', _ => saveLog());
+  document.getElementById("save1").addEventListener('click', _ => {
+    saveLog(1)
+  });
+  document.getElementById("save2").addEventListener('click', _ => {
+    saveLog(2)
+  });
+  document.getElementById("save3").addEventListener('click', _ => {
+    saveLog(3)
+  });
+  document.getElementById("save4").addEventListener('click', _ => {
+    saveLog(4)
+  });
+  document.getElementById("save5").addEventListener('click', _ => {
+    saveLog(5)
+  });
   document.getElementById("load").addEventListener('click', loadLog);
-  document.getElementById("play").addEventListener('click', playLog);
+  document.getElementById("play1").addEventListener('click', _ => {
+    playLog(1)
+  });
+  document.getElementById("play2").addEventListener('click', _ => {
+    playLog(2)
+  });
+  document.getElementById("play3").addEventListener('click', _ => {
+    playLog(3)
+  });
+  document.getElementById("play4").addEventListener('click', _ => {
+    playLog(4)
+  });
+  document.getElementById("play5").addEventListener('click', _ => {
+    playLog(5)
+  });
+  document.getElementById("play").addEventListener('click', _ => playLog());
   document.getElementById("stop").addEventListener('click', stopLog);
+  document.getElementById("clear").addEventListener('click', clearLog);
 }
 
 function draw() {
@@ -346,9 +388,9 @@ function toggleTrack(element) {
 
   if (element.type === "accompaniment") {
     document.getElementById("save").disabled = false;
+    document.getElementById("save" + currentAttempt).disabled = false;
     playAccompaniment(element);
-  }
-  else toggleVocal(element);
+  } else toggleVocal(element);
 }
 
 function refreshVocalsList() {
@@ -385,10 +427,10 @@ function logTrack(element) {
   let time = minutes + ":" + seconds;
   let title = element ? element.title_short : "No Vocals";
   let beat = getCurrentBeat(accurate_seconds);
-  let measure = Math.floor((beat-1) / 4) + 1;
+  let measure = Math.floor((beat - 1) / 4) + 1;
   let index = element ? element.index : -1;
   let accompaniment = beat === 1;
-  trackList[beat-1] = {
+  trackList[beat - 1] = {
     title,
     time,
     measure,
@@ -400,43 +442,94 @@ function logTrack(element) {
   refreshLog();
 }
 
-function saveLog() {
-  localStorage.setItem(LOG_KEYWORD, JSON.stringify(trackList));
-  loadedTrackList = trackList;
-  alert("Log saved!");
+function saveLog(index) {
+  if ((index && index > 1 && window.confirm("Are you sure you want to save your " + th(index) + " mashup? For now, after you save you cannot redo this mashup unless you start from scratch.")) || !index || index == 1) {
+    let keyword = index ? (LOG_KEYWORD + index) : LOG_KEYWORD_DEFAULT;
+    localStorage.setItem(keyword, JSON.stringify(trackList));
+    loadedTrackList = trackList;
+    if (!index) {
+      document.getElementById("play").disabled = false;
+      alert("Log saved!");
+    } else {
+      currentAttempt++;
+      document.getElementById("save" + index).disabled = true;
+      if (index < 5) document.getElementById("save" + (index + 1)).disabled = false;
+      document.getElementById("play" + index).disabled = false;
+      alert(th(index) + " mashup saved!");
+    }
+    document.getElementById("clear").disabled = false;
+  }
 }
 
-function loadLog() {
-  loadedTrackList = localStorage.getItem(LOG_KEYWORD);
-  if (!loadedTrackList) return;
-  loadedTrackList = JSON.parse(loadedTrackList);
-  console.log(interpretLog(loadedTrackList, "console"));
-  alert("Log loaded to console!");
+function loadLog(index) {
+  if (!index) {
+    loadedTrackList = localStorage.getItem(LOG_KEYWORD_DEFAULT);
+    if (!loadedTrackList) return;
+    loadedTrackList = JSON.parse(loadedTrackList);
+    console.log(interpretLog(loadedTrackList, "console"));
+    alert("Log loaded to console!");
+  } else {
+    loadedTrackList = localStorage.getItem(LOG_KEYWORD + index);
+    if (!loadedTrackList) return;
+    loadedTrackList = JSON.parse(loadedTrackList);
+
+  }
 }
 
-function playLog() {
+function playLog(index) {
   resetPlayingField();
   disableInteractivity();
   document.getElementById("stop").disabled = false; //enableStopLog();
-  document.getElementById("play").innerHTML = "Replay";
-  let beat = 1;
-  mainInterval = setInterval(_ => {
-    beat++;
-    let currentTrack = loadedTrackList[beat - 1];
-    if (currentTrack && currentTrack.played) {
-      if (currentTrack.index === -1) toggleVocal();
-      let currentElement = elements[currentTrack.index];
-      toggleVocal(currentElement);
-    }
-  }, getBeatInterval());
-  setTimeout(enableInteractivity, SONG_LENGTH_S * 1000)
-  playAccompaniment(DEFAULT_ACCOMPANIMENT_ELEMENT);
+  if (!index) {
+    document.getElementById("play").innerHTML = "Replay";
+    let beat = 1;
+    mainInterval = setInterval(_ => {
+      beat++;
+      let currentTrack = loadedTrackList[beat - 1];
+      if (currentTrack && currentTrack.played) {
+        if (currentTrack.index === -1) toggleVocal();
+        let currentElement = elements[currentTrack.index];
+        toggleVocal(currentElement);
+      }
+    }, getBeatInterval());
+    setTimeout(enableInteractivity, SONG_LENGTH_S * 1000)
+    playAccompaniment(DEFAULT_ACCOMPANIMENT_ELEMENT);
+  } else {
+    loadLog(index);
+    //document.getElementById("play" + index).innerHTML = "Replay " + th(index) + " Mashup";
+    let beat = 1;
+    mainInterval = setInterval(_ => {
+      beat++;
+      let currentTrack = loadedTrackList[beat - 1];
+      if (currentTrack && currentTrack.played) {
+        if (currentTrack.index === -1) toggleVocal();
+        let currentElement = elements[currentTrack.index];
+        toggleVocal(currentElement);
+      }
+    }, getBeatInterval());
+    setTimeout(enableInteractivity, SONG_LENGTH_S * 1000)
+    playAccompaniment(DEFAULT_ACCOMPANIMENT_ELEMENT);
+  }
 }
 
 function stopLog() {
   resetPlayingField();
   document.getElementById("stop").disabled = true; //enableStopLog();
   document.getElementById("play").innerHTML = "Play";
+}
+
+function clearLog() {
+  if (window.confirm("Do you really want to clear all your saved mashups? You cannot undo this.")) {
+    resetPlayingField();
+    localStorage.removeItem(LOG_KEYWORD_DEFAULT);
+    document.getElementById("play").disabled = true;
+    for (let i = 1; i <= 5; i++) {
+      localStorage.removeItem(LOG_KEYWORD + i);
+      document.getElementById("play" + i).disabled = true;
+      document.getElementById("save" + i).disabled = true;
+    }
+    document.getElementById("clear").disabled = true;
+  }
 }
 
 function th(i) {
@@ -471,7 +564,7 @@ function download(data, filename, type) {
 
 function interpretLog(log, mode = "HTML") {
   if (!log) return;
-  log = log.filter(e => e && e.played).map(e => "(" + (((e.beat-1)%4)+1) + "/" + e.measure + ") " + e.time + " - " + e.title + (e.accompaniment?" (Instrumental)":""))
+  log = log.filter(e => e && e.played).map(e => "(" + (((e.beat - 1) % 4) + 1) + "/" + e.measure + ") " + e.time + " - " + e.title + (e.accompaniment ? " (Instrumental)" : ""))
   switch (mode) {
     case "HTML":
       return log.join("<br>");
@@ -481,7 +574,7 @@ function interpretLog(log, mode = "HTML") {
 }
 
 function getCurrentBeat(seconds) {
-  return Math.round((BPM / 60) * seconds)+1;
+  return Math.round((BPM / 60) * seconds) + 1;
 }
 
 function getBeatInterval() { //returns the amount of seconds to play one beat
