@@ -14,7 +14,7 @@ let animatingMode = "default";
 let radius = BASE_SIZE;
 let simpleMode = true;
 let trackList = [];
-let autoLoadedTrackList;
+let loadedTrackList;
 let canvasInteractable = true;
 let mainInterval;
 for (let i = 0; i < getBeats(); i++) {
@@ -136,11 +136,11 @@ window.addEventListener('load', _ => {
   updateListeners();
   draw();
   //drawCircle();
-  autoLoadedTrackList = localStorage.getItem(LOG_KEYWORD);
-  if (autoLoadedTrackList) {
+  loadedTrackList = localStorage.getItem(LOG_KEYWORD);
+  if (loadedTrackList) {
     document.getElementById("load").disabled = false;
     document.getElementById("play").disabled = false;
-    autoLoadedTrackList = JSON.parse(autoLoadedTrackList);
+    loadedTrackList = JSON.parse(loadedTrackList);
   }
 });
 
@@ -344,8 +344,11 @@ function trackOff(element) {}
 
 function toggleTrack(element) {
 
-  if (element.type === "accompaniment") playAccompaniment(element);
-  else playVocal(element);
+  if (element.type === "accompaniment") {
+    document.getElementById("save").disabled = false;
+    playAccompaniment(element);
+  }
+  else toggleVocal(element);
 }
 
 function refreshVocalsList() {
@@ -382,28 +385,32 @@ function logTrack(element) {
   let time = minutes + ":" + seconds;
   let title = element ? element.title_short : "No Vocals";
   let beat = getCurrentBeat(accurate_seconds);
-  let measure = Math.floor(beat / 4) + 1;
-  let index = element.index;
-  trackList[beat - 1] = {
+  let measure = Math.floor((beat-1) / 4) + 1;
+  let index = element ? element.index : -1;
+  let accompaniment = beat === 1;
+  trackList[beat-1] = {
     title,
     time,
     measure,
     beat,
     played: true,
-    index
+    index,
+    accompaniment
   };
   refreshLog();
 }
 
 function saveLog() {
   localStorage.setItem(LOG_KEYWORD, JSON.stringify(trackList));
+  loadedTrackList = trackList;
   alert("Log saved!");
 }
 
 function loadLog() {
-  let loadedTrackList = localStorage.getItem(LOG_KEYWORD);
+  loadedTrackList = localStorage.getItem(LOG_KEYWORD);
   if (!loadedTrackList) return;
-  console.log(interpretLog(JSON.parse(loadedTrackList), "console"));
+  loadedTrackList = JSON.parse(loadedTrackList);
+  console.log(interpretLog(loadedTrackList, "console"));
   alert("Log loaded to console!");
 }
 
@@ -415,10 +422,11 @@ function playLog() {
   let beat = 1;
   mainInterval = setInterval(_ => {
     beat++;
-    let currentTrack = autoLoadedTrackList[beat - 1];
-    if (currentTrack.played) {
+    let currentTrack = loadedTrackList[beat - 1];
+    if (currentTrack && currentTrack.played) {
+      if (currentTrack.index === -1) toggleVocal();
       let currentElement = elements[currentTrack.index];
-      playVocal(currentElement);
+      toggleVocal(currentElement);
     }
   }, getBeatInterval());
   setTimeout(enableInteractivity, SONG_LENGTH_S * 1000)
@@ -463,7 +471,7 @@ function download(data, filename, type) {
 
 function interpretLog(log, mode = "HTML") {
   if (!log) return;
-  log = log.filter(e => e.played).map(e => "(" + ((e.beat % 4) + 1) + "/" + e.measure + ") " + e.time + " - " + e.title)
+  log = log.filter(e => e && e.played).map(e => "(" + (((e.beat-1)%4)+1) + "/" + e.measure + ") " + e.time + " - " + e.title + (e.accompaniment?" (Instrumental)":""))
   switch (mode) {
     case "HTML":
       return log.join("<br>");
@@ -473,7 +481,7 @@ function interpretLog(log, mode = "HTML") {
 }
 
 function getCurrentBeat(seconds) {
-  return Math.round((BPM / 60) * seconds);
+  return Math.round((BPM / 60) * seconds)+1;
 }
 
 function getBeatInterval() { //returns the amount of seconds to play one beat
@@ -490,20 +498,30 @@ function elementsMisc() {
   });
 }
 
-function playVocal(element) {
-  if (element.track.muted) // "Play Vocals"
-  {
-    logTrack(element);
-    animateGrow(element);
-    element.track.muted = false;
-  } else { // "Mute Vocals"
-    logTrack();
-    animateShrink(element);
-    element.track.muted = true;
-  }
-  if (simpleMode) {
+function toggleVocal(element) {
+  if (element) {
+    if (element.track.muted) // "Play Vocals"
+    {
+      logTrack(element);
+      animateGrow(element);
+      element.track.muted = false;
+    } else { // "Mute Vocals"
+      logTrack();
+      animateShrink(element);
+      element.track.muted = true;
+    }
+    if (simpleMode) {
+      elements.forEach(e => {
+        if (e.type === "vocals" && e.id !== element.id) {
+          animateShrink(e);
+          e.track.muted = true;
+        }
+      });
+    }
+  } else {
+    // if (simpleMode) -- WONT WORK WHEN SIMPLEMODE IS TURNED OFF
     elements.forEach(e => {
-      if (e.type === "vocals" && e.id !== element.id) {
+      if (e.type === "vocals") {
         animateShrink(e);
         e.track.muted = true;
       }
@@ -513,6 +531,8 @@ function playVocal(element) {
 }
 
 function playAccompaniment(element) {
+  //resetPlayingField();
+  document.getElementById("stop").disabled = false;
   elements.forEach(e => {
     e.track.currentTime = 0
   });
@@ -520,6 +540,7 @@ function playAccompaniment(element) {
   now = Date.now();
   elements[0].track.play();
   elements[0].track.muted = false;
+  logTrack(elements[0]);
   for (let i = 1; i < elements.length; i++) {
     elements[i].track.play();
     //elements[i].track.muted = true;
@@ -549,7 +570,7 @@ function refreshLog() {
 
 function resetPlayingField() {
   enableInteractivity();
-  elements.forEach(e=>{
+  elements.forEach(e => {
     e.track.muted = true;
     e.track.pause();
     e.track.currentTime = 0;
