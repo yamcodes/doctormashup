@@ -439,14 +439,17 @@ function logTrack(element) {
   let measure = Math.floor((beat - 1) / 4) + 1;
   let index = element ? element.index : -1;
   let accompaniment = beat === 1;
+  let played = true;
+  let id = element ? element.id : "novocals";
   trackList[beat - 1] = {
     title,
     time,
     measure,
     beat,
-    played: true,
+    played,
     index,
-    accompaniment
+    accompaniment,
+    id,
   };
   refreshLog();
 }
@@ -479,9 +482,12 @@ function loadLog(index) {
     console.log(interpretLog(loadedTrackList, "console"));
     alert("Log loaded to console!");
   } else {
-    loadedTrackList = localStorage.getItem(LOG_KEYWORD + index);
-    if (!loadedTrackList) return;
-    loadedTrackList = JSON.parse(loadedTrackList);
+    if (index === 6) {
+    } else {
+      loadedTrackList = localStorage.getItem(LOG_KEYWORD + index);
+      if (!loadedTrackList) return;
+      loadedTrackList = JSON.parse(loadedTrackList);
+    }
 
   }
 }
@@ -514,7 +520,7 @@ function playLog(index) {
       if (currentTrack && currentTrack.played) {
         if (currentTrack.index === -1) toggleVocal();
         let currentElement = elements[currentTrack.index];
-        toggleVocal(currentElement);
+        toggleVocal(currentElement, true);
       }
     }, getBeatInterval());
     setTimeout(enableInteractivity, SONG_LENGTH_S * 1000)
@@ -606,14 +612,14 @@ function elementsMisc() {
   });
 }
 
-function toggleVocal(element) {
+function toggleVocal(element, play=false) {
   if (element) {
     if (element.track.muted) // "Play Vocals"
     {
       logTrack(element);
       animateGrow(element);
       element.track.muted = false;
-    } else { // "Mute Vocals"
+    } else if (!play) { // "Mute Vocals"
       logTrack();
       animateShrink(element);
       element.track.muted = true;
@@ -702,5 +708,50 @@ function enableInteractivity() {
 }
 
 function generate() {
-  alert("hey");
+  const markovChain = {}
+  const markovChain2 = {}
+  const result = []
+  for (let i = 1; i <= 5; i++) { // up to 5
+    loadedTrackList = localStorage.getItem(LOG_KEYWORD + i);
+    if (!loadedTrackList) return;
+    loadedTrackList = JSON.parse(loadedTrackList);
+    let id = "accompaniment"
+    for (let j = 1; j < loadedTrackList.length; j++) {
+      let track = loadedTrackList[j];
+      if (!markovChain2[j]) markovChain2[j] = []
+      if (track) id=track.id 
+      markovChain2[j].push(id)
+      let prevTrack = loadedTrackList[j - 1];
+      if (track) {
+        let prevBeat = track.beat - 1;
+        //console.log(track);
+        if (!markovChain[prevBeat]) {
+          markovChain[prevBeat] = []
+        }
+        markovChain[prevBeat].push(track.id)
+      }
+    }
+  }
+  let currentBeat = 0
+  for (let i = 0; i < Object.keys(markovChain).length; i++) {
+    //let options = markovChain[Object.keys(markovChain)[i]];
+    let options = markovChain2[Object.keys(markovChain)[i]];
+    let randomNumber1to5 = Math.floor(Math.random() * 5);
+    let randomOption = options[randomNumber1to5] ? options[randomNumber1to5] : "nochange";
+    let track = {}
+    track.id = randomOption
+    track.beat = parseInt(Object.keys(markovChain)[i]) + 1
+    track.played = true
+    if (randomOption !== "nochange")  {
+      for (let j = currentBeat; j<track.beat-1; j++) result.push({});
+      elements.forEach((e,i)=>{
+        if (e.type==="vocals" && e.id === track.id) track.index = i;
+      })
+      result.push(track)
+      currentBeat = track.beat
+    }
+    //result.push()
+  }
+  loadedTrackList = result;
+  playLog(6);
 }
