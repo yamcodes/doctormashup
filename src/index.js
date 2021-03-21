@@ -146,9 +146,10 @@ window.addEventListener('load', _ => {
     document.getElementById("clear").disabled = false;
     loadedTrackList = JSON.parse(loadedTrackList);
   }
-  for (let i = 5; i >= 1; i--) {
+  for (let i = 1; i <=5; i++) {
     loadedTrackList = localStorage.getItem(LOG_KEYWORD + i);
     if (loadedTrackList) {
+      currentAttempt=i+1;
       document.getElementById("play" + i).disabled = false;
       loadedTrackList = JSON.parse(loadedTrackList);
     }
@@ -388,7 +389,7 @@ function toggleTrack(element) {
 
   if (element.type === "accompaniment") {
     document.getElementById("save").disabled = false;
-    document.getElementById("save" + currentAttempt).disabled = false;
+    for (let i=1; i<= Math.min(currentAttempt,5);i++) document.getElementById("save" + i).disabled = false;
     playAccompaniment(element);
   } else toggleVocal(element);
 }
