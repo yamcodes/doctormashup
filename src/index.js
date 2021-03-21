@@ -1,4 +1,5 @@
 import * as Tone from "tone";
+import { generateWaveform } from "tone/build/esm/source/oscillator/OscillatorInterface";
 const BASE_SIZE = 30;
 const SMALL_SIZE = 17;
 const MEDIUM_SIZE = 23;
@@ -154,6 +155,7 @@ window.addEventListener('load', _ => {
       loadedTrackList = JSON.parse(loadedTrackList);
     }
   }
+  if (currentAttempt>=6) document.getElementById("generate").disabled = false;
 });
 
 function updateListeners() {
@@ -190,6 +192,7 @@ function updateListeners() {
   document.getElementById("play5").addEventListener('click', _ => {
     playLog(5)
   });
+  document.getElementById("generate").addEventListener('click', _ => generate());
   //document.getElementById("play").addEventListener('click', _ => playLog());
   document.getElementById("stop").addEventListener('click', stopLog);
   document.getElementById("clear").addEventListener('click', clearLog);
@@ -390,6 +393,7 @@ function toggleTrack(element) {
   if (element.type === "accompaniment") {
     //document.getElementById("save").disabled = false;
     for (let i = 1; i <= Math.min(currentAttempt, 5); i++) document.getElementById("save" + i).disabled = false;
+    resetPlayingField();
     playAccompaniment(element);
   } else toggleVocal(element);
 }
@@ -444,7 +448,7 @@ function logTrack(element) {
 }
 
 function saveLog(index) {
-  if ((index && index > 1 && window.confirm("Are you sure you want to save your " + th(index) + " mashup? For now, after you save you cannot redo this mashup unless you start from scratch.")) || !index || index == 1) {
+  if ((index && index<currentAttempt && window.confirm("Are you sure you want to override your " + th(index) + " mashup?")) || !index || currentAttempt<=index) {
     let keyword = index ? (LOG_KEYWORD + index) : LOG_KEYWORD_DEFAULT;
     localStorage.setItem(keyword, JSON.stringify(trackList));
     loadedTrackList = trackList;
@@ -453,7 +457,8 @@ function saveLog(index) {
       alert("Log saved!");
     } else {
       currentAttempt++;
-      document.getElementById("save" + index).disabled = true;
+      if (currentAttempt>=6) document.getElementById("generate").disabled = false;
+      //document.getElementById("save" + index).disabled = true;
       if (index < 5) document.getElementById("save" + (index + 1)).disabled = false;
       document.getElementById("play" + index).disabled = false;
       alert(th(index) + " mashup saved!");
@@ -514,11 +519,11 @@ function playLog(index) {
 }
 
 function stopLog() {
-  if (window.confirm("Do you really want to stop this mashup? You will lose this current mashup and this cannot be undone.")) {
-    resetPlayingField();
+  //if (window.confirm("Do you really want to stop this mashup? You will lose this current mashup and this cannot be undone.")) {
+    resetPlayingField(false);
     document.getElementById("stop").disabled = true; //enableStopLog();
     //document.getElementById("play").innerHTML = "Play";
-  }
+  //}
 }
 
 function clearLog() {
@@ -532,6 +537,9 @@ function clearLog() {
       document.getElementById("save" + i).disabled = true;
     }
     document.getElementById("clear").disabled = true;
+    document.getElementById("stop").disabled = true;
+    document.getElementById("generate").disabled = true;
+    currentAttempt=1;
   }
 }
 
@@ -665,7 +673,7 @@ function refreshLog() {
   logElement.scrollTop = logElement.scrollHeight;
 }
 
-function resetPlayingField() {
+function resetPlayingField(clearLog=true) {
   enableInteractivity();
   elements.forEach(e => {
     e.track.muted = true;
@@ -673,7 +681,7 @@ function resetPlayingField() {
     e.track.currentTime = 0;
     animateShrinkGrow(e, getCurrentSize(e));
   });
-  trackList = [];
+  if(clearLog) trackList = [];
   refreshVocalsList();
   refreshLog();
   clearInterval(mainInterval);
@@ -687,4 +695,8 @@ function disableInteractivity() {
 function enableInteractivity() {
   canvasInteractable = true;
   //document.getElementById("save").disabled = false;
+}
+
+function generate() {
+  alert("hey");
 }
