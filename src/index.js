@@ -1,5 +1,7 @@
 import * as Tone from "tone";
-import { generateWaveform } from "tone/build/esm/source/oscillator/OscillatorInterface";
+import {
+  generateWaveform
+} from "tone/build/esm/source/oscillator/OscillatorInterface";
 const BASE_SIZE = 30;
 const SMALL_SIZE = 17;
 const MEDIUM_SIZE = 23;
@@ -155,7 +157,7 @@ window.addEventListener('load', _ => {
       loadedTrackList = JSON.parse(loadedTrackList);
     }
   }
-  if (currentAttempt>=6) document.getElementById("generate").disabled = false;
+  if (currentAttempt >= 6) document.getElementById("generate").disabled = false;
 });
 
 function updateListeners() {
@@ -391,10 +393,12 @@ function trackOff(element) {}
 function toggleTrack(element) {
 
   if (element.type === "accompaniment") {
-    //document.getElementById("save").disabled = false;
-    for (let i = 1; i <= Math.min(currentAttempt, 5); i++) document.getElementById("save" + i).disabled = false;
-    resetPlayingField();
-    playAccompaniment(element);
+    if ((!elements[0].track.paused && window.confirm("Are you sure you want to restart your current mashup? This cannot be undone. If you want to stop the music (without clearing your work) you can press the red Stop button.")) || elements[0].track.paused) {
+      //document.getElementById("save").disabled = false;
+      for (let i = 1; i <= Math.min(currentAttempt, 5); i++) document.getElementById("save" + i).disabled = false;
+      resetPlayingField();
+      playAccompaniment(element);
+    }
   } else toggleVocal(element);
 }
 
@@ -448,7 +452,7 @@ function logTrack(element) {
 }
 
 function saveLog(index) {
-  if ((index && index<currentAttempt && window.confirm("Are you sure you want to override your " + th(index) + " mashup?")) || !index || currentAttempt<=index) {
+  if ((index && index < currentAttempt && window.confirm("Are you sure you want to override your " + th(index) + " mashup?")) || !index || currentAttempt <= index) {
     let keyword = index ? (LOG_KEYWORD + index) : LOG_KEYWORD_DEFAULT;
     localStorage.setItem(keyword, JSON.stringify(trackList));
     loadedTrackList = trackList;
@@ -457,7 +461,7 @@ function saveLog(index) {
       alert("Log saved!");
     } else {
       currentAttempt++;
-      if (currentAttempt>=6) document.getElementById("generate").disabled = false;
+      if (currentAttempt >= 6) document.getElementById("generate").disabled = false;
       //document.getElementById("save" + index).disabled = true;
       if (index < 5) document.getElementById("save" + (index + 1)).disabled = false;
       document.getElementById("play" + index).disabled = false;
@@ -520,9 +524,9 @@ function playLog(index) {
 
 function stopLog() {
   //if (window.confirm("Do you really want to stop this mashup? You will lose this current mashup and this cannot be undone.")) {
-    resetPlayingField(false);
-    document.getElementById("stop").disabled = true; //enableStopLog();
-    //document.getElementById("play").innerHTML = "Play";
+  resetPlayingField(false);
+  document.getElementById("stop").disabled = true; //enableStopLog();
+  //document.getElementById("play").innerHTML = "Play";
   //}
 }
 
@@ -539,7 +543,7 @@ function clearLog() {
     document.getElementById("clear").disabled = true;
     document.getElementById("stop").disabled = true;
     document.getElementById("generate").disabled = true;
-    currentAttempt=1;
+    currentAttempt = 1;
   }
 }
 
@@ -673,7 +677,7 @@ function refreshLog() {
   logElement.scrollTop = logElement.scrollHeight;
 }
 
-function resetPlayingField(clearLog=true) {
+function resetPlayingField(clearLog = true) {
   enableInteractivity();
   elements.forEach(e => {
     e.track.muted = true;
@@ -681,7 +685,7 @@ function resetPlayingField(clearLog=true) {
     e.track.currentTime = 0;
     animateShrinkGrow(e, getCurrentSize(e));
   });
-  if(clearLog) trackList = [];
+  if (clearLog) trackList = [];
   refreshVocalsList();
   refreshLog();
   clearInterval(mainInterval);
