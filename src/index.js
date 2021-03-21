@@ -141,15 +141,15 @@ window.addEventListener('load', _ => {
 
   loadedTrackList = localStorage.getItem(LOG_KEYWORD_DEFAULT);
   if (loadedTrackList) {
-    document.getElementById("load").disabled = false;
-    document.getElementById("play").disabled = false;
+    //document.getElementById("load").disabled = false;
+    //document.getElementById("play").disabled = false;
     document.getElementById("clear").disabled = false;
     loadedTrackList = JSON.parse(loadedTrackList);
   }
-  for (let i = 1; i <=5; i++) {
+  for (let i = 1; i <= 5; i++) {
     loadedTrackList = localStorage.getItem(LOG_KEYWORD + i);
     if (loadedTrackList) {
-      currentAttempt=i+1;
+      currentAttempt = i + 1;
       document.getElementById("play" + i).disabled = false;
       loadedTrackList = JSON.parse(loadedTrackList);
     }
@@ -158,7 +158,7 @@ window.addEventListener('load', _ => {
 
 function updateListeners() {
   document.getElementById("simpleModeToggle").addEventListener('change', toggleSimpleMode);
-  document.getElementById("save").addEventListener('click', _ => saveLog());
+  //document.getElementById("save").addEventListener('click', _ => saveLog());
   document.getElementById("save1").addEventListener('click', _ => {
     saveLog(1)
   });
@@ -174,7 +174,7 @@ function updateListeners() {
   document.getElementById("save5").addEventListener('click', _ => {
     saveLog(5)
   });
-  document.getElementById("load").addEventListener('click', loadLog);
+  //document.getElementById("load").addEventListener('click', loadLog);
   document.getElementById("play1").addEventListener('click', _ => {
     playLog(1)
   });
@@ -190,7 +190,7 @@ function updateListeners() {
   document.getElementById("play5").addEventListener('click', _ => {
     playLog(5)
   });
-  document.getElementById("play").addEventListener('click', _ => playLog());
+  //document.getElementById("play").addEventListener('click', _ => playLog());
   document.getElementById("stop").addEventListener('click', stopLog);
   document.getElementById("clear").addEventListener('click', clearLog);
 }
@@ -388,8 +388,8 @@ function trackOff(element) {}
 function toggleTrack(element) {
 
   if (element.type === "accompaniment") {
-    document.getElementById("save").disabled = false;
-    for (let i=1; i<= Math.min(currentAttempt,5);i++) document.getElementById("save" + i).disabled = false;
+    //document.getElementById("save").disabled = false;
+    for (let i = 1; i <= Math.min(currentAttempt, 5); i++) document.getElementById("save" + i).disabled = false;
     playAccompaniment(element);
   } else toggleVocal(element);
 }
@@ -449,7 +449,7 @@ function saveLog(index) {
     localStorage.setItem(keyword, JSON.stringify(trackList));
     loadedTrackList = trackList;
     if (!index) {
-      document.getElementById("play").disabled = false;
+      //document.getElementById("play").disabled = false;
       alert("Log saved!");
     } else {
       currentAttempt++;
@@ -482,7 +482,7 @@ function playLog(index) {
   disableInteractivity();
   document.getElementById("stop").disabled = false; //enableStopLog();
   if (!index) {
-    document.getElementById("play").innerHTML = "Replay";
+    //document.getElementById("play").innerHTML = "Replay";
     let beat = 1;
     mainInterval = setInterval(_ => {
       beat++;
@@ -514,16 +514,18 @@ function playLog(index) {
 }
 
 function stopLog() {
-  resetPlayingField();
-  document.getElementById("stop").disabled = true; //enableStopLog();
-  document.getElementById("play").innerHTML = "Play";
+  if (window.confirm("Do you really want to stop this mashup? You will lose this current mashup and this cannot be undone.")) {
+    resetPlayingField();
+    document.getElementById("stop").disabled = true; //enableStopLog();
+    //document.getElementById("play").innerHTML = "Play";
+  }
 }
 
 function clearLog() {
   if (window.confirm("Do you really want to clear all your saved mashups? You cannot undo this.")) {
     resetPlayingField();
     localStorage.removeItem(LOG_KEYWORD_DEFAULT);
-    document.getElementById("play").disabled = true;
+    //document.getElementById("play").disabled = true;
     for (let i = 1; i <= 5; i++) {
       localStorage.removeItem(LOG_KEYWORD + i);
       document.getElementById("play" + i).disabled = true;
@@ -679,10 +681,10 @@ function resetPlayingField() {
 
 function disableInteractivity() {
   canvasInteractable = false;
-  document.getElementById("save").disabled = true;
+  //document.getElementById("save").disabled = true;
 }
 
 function enableInteractivity() {
   canvasInteractable = true;
-  document.getElementById("save").disabled = false;
+  //document.getElementById("save").disabled = false;
 }

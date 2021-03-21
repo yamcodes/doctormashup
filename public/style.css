@@ -89,6 +89,22 @@ button:disabled {
   color: #999b9f;
 }
 
+#stop, #clear {
+  background-color: #f04747;
+}
+
+#stop:disabled, #clear:disabled { 
+  background-color: #934043;
+}
+
+#stop:hover:enabled, #clear:hover:enabled { 
+  background-color: #d84040;
+}
+
+#stop:active:enabled, #clear:active:enabled {
+  background-color: #c03939;
+}
+
 /* toggle in label designing */
 .toggle {
   position: relative;
