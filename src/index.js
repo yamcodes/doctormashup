@@ -500,8 +500,8 @@ function playLog(index) {
     //document.getElementById("play" + index).innerHTML = "Replay " + th(index) + " Mashup";
     let beat = 1;
     mainInterval = setInterval(_ => {
+      let currentTrack = loadedTrackList[beat];
       beat++;
-      let currentTrack = loadedTrackList[beat - 1];
       if (currentTrack && currentTrack.played) {
         if (currentTrack.index === -1) toggleVocal();
         let currentElement = elements[currentTrack.index];
@@ -620,6 +620,7 @@ function toggleVocal(element) {
         e.track.muted = true;
       }
     });
+    logTrack();
   }
   refreshVocalsList();
 }
