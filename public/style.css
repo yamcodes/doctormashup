@@ -169,13 +169,21 @@ p {
   display: none;
 }
 
-.toggles {
+.track-info-title {
+  
   padding-top: 20px;
+}
+
+.toggles {
   text-align: left;
 }
 
 tr .toggles {
   /*border-top: 1px solid #42454a;*/
+}
+
+#generate {
+  margin-bottom: 20px;
 }
 
 .toggle-wrapper {
